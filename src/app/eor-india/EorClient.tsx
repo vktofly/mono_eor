@@ -789,7 +789,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               className="bg-cta-500 hover:bg-cta-600 text-white font-semibold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => trackEvent('complete_solution_cta_clicked')}
+              onClick={() => {
+                trackEvent('complete_solution_cta_clicked');
+                window.location.href = '/contact';
+              }}
             >
               Get Your Complete India Solution
             </motion.button>
@@ -1067,7 +1070,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => trackEvent('onboarding_cta_clicked')}
+                  onClick={() => {
+                    trackEvent('onboarding_cta_clicked');
+                    window.location.href = '/contact';
+                  }}
                 >
                   Start Your 48-Hour Journey
                 </motion.button>
@@ -1359,7 +1365,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   className="w-full bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => trackEvent('salary_optimizer_cta_clicked')}
+                  onClick={() => {
+                    trackEvent('salary_optimizer_cta_clicked');
+                    window.location.href = '/contact';
+                  }}
                 >
                   Optimize Your Team&apos;s Salaries
                 </motion.button>
@@ -2408,7 +2417,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 className="bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white font-semibold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => trackEvent('comparison_cta_clicked')}
+                onClick={() => {
+                  trackEvent('comparison_cta_clicked');
+                  window.location.href = '/contact';
+                }}
               >
                 Get Your Free Comparison Report
               </motion.button>
@@ -2604,7 +2616,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               className="inline-flex items-center justify-center rounded-lg bg-cta-500 hover:bg-cta-600 text-white px-8 py-3 text-sm font-medium shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-cta-300 transition-all duration-200 relative overflow-hidden"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => trackEvent('bottom_cta_quote_clicked')}
+              onClick={() => {
+                trackEvent('bottom_cta_quote_clicked');
+                window.location.href = '/contact';
+              }}
             >
               <motion.span
                 className="relative z-10"
@@ -2630,7 +2645,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               className="inline-flex items-center justify-center rounded-lg text-brand-600 hover:text-brand-700 border-2 border-brand-200 hover:border-brand-300 bg-white px-6 py-3 text-sm font-medium hover:bg-brand-50 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-200 transition-all duration-200"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => trackEvent('bottom_cta_demo_clicked')}
+              onClick={() => {
+                trackEvent('bottom_cta_demo_clicked');
+                window.location.href = '/contact';
+              }}
             >
               Book Demo
             </motion.button>
