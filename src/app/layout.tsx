@@ -8,15 +8,22 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { Analytics } from "@/components/Analytics";
 import { StructuredData } from "@/components/StructuredData";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
+import { PerformanceMonitor } from "@/components/optimized/PerformanceMonitor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ["ui-monospace", "monospace"],
 });
 
 export const metadata: Metadata = {
@@ -85,6 +92,15 @@ export const metadata: Metadata = {
     yahoo: "your-yahoo-verification-code",
   },
   category: "Business Services",
+  other: {
+    // Performance optimizations
+    "format-detection": "telephone=no",
+    "theme-color": "#2155CD",
+    "color-scheme": "light",
+    // Preload critical resources
+    "dns-prefetch": "//fonts.googleapis.com",
+    "preconnect": "https://fonts.gstatic.com",
+  },
 };
 
 export default function RootLayout({
@@ -96,6 +112,14 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <StructuredData />
+        {/* Preload critical resources */}
+        <link rel="preload" href="/fonts/geist-sans.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -108,6 +132,7 @@ export default function RootLayout({
         <Toaster />
         <CookieConsent />
         <Analytics />
+        <PerformanceMonitor />
         <ExitIntentPopup />
       </body>
     </html>

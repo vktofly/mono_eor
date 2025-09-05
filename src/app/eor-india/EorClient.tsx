@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sankey, ResponsiveContainer } from "recharts";
+import { LazyWrapper } from "@/components/optimized/LazyWrapper";
 
 // Global type declaration for gtag
 declare global {
@@ -1170,13 +1171,22 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
           <div className="max-w-7xl mx-auto">
             <div className="grid xl:grid-cols-2 gap-12">
               {/* Interactive Sankey Diagram */}
-              <motion.div 
-                className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 relative overflow-hidden"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
+              <LazyWrapper
+                fallback={
+                  <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 relative overflow-hidden">
+                    <div className="h-96 bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">
+                      <span className="text-gray-500">Loading interactive diagram...</span>
+                    </div>
+                  </div>
+                }
               >
+                <motion.div 
+                  className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 relative overflow-hidden"
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  viewport={{ once: true }}
+                >
                 {/* Gradient overlay */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cta-500 via-brand-500 to-brand-600"></div>
                 
@@ -1246,7 +1256,8 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     <strong>Example:</strong> ₹1,00,000 monthly salary optimized for maximum take-home pay
                   </motion.p>
           </div>
-              </motion.div>
+                </motion.div>
+              </LazyWrapper>
 
               {/* Detailed Breakdown */}
               <motion.div 

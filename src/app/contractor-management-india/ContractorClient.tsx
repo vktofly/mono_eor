@@ -295,6 +295,13 @@ export default function ContractorClient() {
                 className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  trackEvent('contractor_management_cta_clicked', {
+                    cta_type: 'start_managing_contractors',
+                    cta_location: 'hero_section'
+                  });
+                  window.location.href = '/contact';
+                }}
               >
                 Start Managing Contractors
               </motion.button>
@@ -303,6 +310,16 @@ export default function ContractorClient() {
                 className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  trackEvent('contractor_management_cta_clicked', {
+                    cta_type: 'see_how_it_works',
+                    cta_location: 'hero_section'
+                  });
+                  // Scroll to the process section
+                  document.getElementById('how-it-works')?.scrollIntoView({ 
+                    behavior: 'smooth' 
+                  });
+                }}
               >
                 See How It Works
               </motion.button>
@@ -390,7 +407,7 @@ export default function ContractorClient() {
       </section>
 
       {/* Process Flow Section */}
-      <section className="py-20 bg-gray-50">
+      <section id="how-it-works" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
