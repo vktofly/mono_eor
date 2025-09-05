@@ -429,7 +429,7 @@ export default function Contact() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Email inquiries</span>
-                        <span className="text-sm font-medium text-gray-900">< 24 hours</span>
+                        <span className="text-sm font-medium text-gray-900">&lt; 24 hours</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Phone calls</span>
@@ -437,7 +437,7 @@ export default function Contact() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Urgent requests</span>
-                        <span className="text-sm font-medium text-gray-900">< 2 hours</span>
+                        <span className="text-sm font-medium text-gray-900">&lt; 2 hours</span>
                       </div>
                     </div>
                   </div>
