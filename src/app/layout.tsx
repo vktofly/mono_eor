@@ -9,6 +9,8 @@ import { Analytics } from "@/components/Analytics";
 import { StructuredData } from "@/components/StructuredData";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { PerformanceMonitor } from "@/components/optimized/PerformanceMonitor";
+import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
+import { AccessibilityToolbar } from "@/components/accessibility/AccessibilityToolbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -120,20 +122,35 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2155CD" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="MonoHR" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HeaderWrapper />
-        <main className="pt-16 lg:pt-20">
-          {children}
-        </main>
-        <Footer />
-        <Toaster />
-        <CookieConsent />
-        <Analytics />
-        <PerformanceMonitor />
-        <ExitIntentPopup />
+        <AccessibilityProvider>
+          {/* Skip Link for Screen Readers */}
+          <a href="#main-content" className="skip-link">
+            Skip to main content
+          </a>
+          
+          <HeaderWrapper />
+          <main id="main-content" className="pt-16 lg:pt-20">
+            {children}
+          </main>
+          <Footer />
+          <Toaster />
+          <CookieConsent />
+          <Analytics />
+          <PerformanceMonitor />
+          <AccessibilityToolbar />
+          <ExitIntentPopup />
+        </AccessibilityProvider>
       </body>
     </html>
   );

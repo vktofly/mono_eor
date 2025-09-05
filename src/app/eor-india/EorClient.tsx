@@ -400,19 +400,27 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
           
           {/* Email capture form */}
           <div className="mt-8 max-w-md">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex gap-3">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-3">
               <input
                 {...register("email")}
                 type="email"
                 placeholder="Work email"
-                className="flex-1 rounded-md border-0 bg-white/10 px-4 py-3 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/20 transition-all"
+                className="flex-1 rounded-md border-0 bg-white/10 px-4 py-3 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/20 transition-all touch-target"
+                aria-label="Work email address"
+                aria-describedby="email-error"
               />
+              {formState.errors.email && (
+                <span id="email-error" className="text-red-300 text-sm sm:hidden">
+                  {formState.errors.email.message}
+                </span>
+              )}
               <motion.button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center justify-center rounded-md bg-white text-brand-600 hover:opacity-90 px-6 py-3 text-sm font-medium disabled:opacity-50 transition-all"
+                className="inline-flex items-center justify-center rounded-md bg-white text-brand-600 hover:opacity-90 px-6 py-3 text-sm font-medium disabled:opacity-50 transition-all touch-target min-h-[44px]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                aria-label="Get started with EOR services"
               >
                 {submitting ? (
                   <div className="flex items-center gap-2">

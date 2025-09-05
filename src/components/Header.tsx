@@ -138,8 +138,10 @@ export function Header({ settings }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-brand-600 hover:bg-gray-100 transition-colors"
-            aria-label="Toggle menu"
+            className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-brand-600 hover:bg-gray-100 transition-colors touch-target"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -153,6 +155,9 @@ export function Header({ settings }: HeaderProps) {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden border-t border-gray-200 bg-white"
+              id="mobile-menu"
+              role="navigation"
+              aria-label="Mobile navigation menu"
             >
               <div className="py-4 space-y-2">
                 {settings.navLinks.map((link) => (
@@ -161,7 +166,9 @@ export function Header({ settings }: HeaderProps) {
                       <div>
                         <button
                           onClick={() => toggleDropdown(link.label)}
-                          className="flex items-center justify-between w-full px-4 py-3 text-left text-gray-700 hover:text-brand-600 hover:bg-gray-50 rounded-lg transition-colors"
+                          className="flex items-center justify-between w-full px-4 py-3 text-left text-gray-700 hover:text-brand-600 hover:bg-gray-50 rounded-lg transition-colors touch-target"
+                          aria-expanded={activeDropdown === link.label}
+                          aria-controls={`mobile-submenu-${link.label}`}
                         >
                           <span className="font-medium">{link.label}</span>
                           <ChevronDown className={`w-4 h-4 transition-transform ${
