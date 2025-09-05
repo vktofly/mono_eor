@@ -1,9 +1,8 @@
-import { EorClient } from "./EorClient";
-import { loadSiteSettings } from "@/lib/config";
+import { redirect } from 'next/navigation';
 
-export default async function EorIndia() {
-  const settings = await loadSiteSettings();
-  return <EorClient calendlyUrl={settings.calendlyUrl} />;
+export default function EorIndia() {
+  // Redirect to homepage since EOR India is now the landing page
+  redirect('/');
 }
 
 

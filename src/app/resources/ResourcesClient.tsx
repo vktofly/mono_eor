@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ReadingProgress } from "@/components/shared/ReadingProgress";
+import { FloatingCTA } from "@/components/shared/FloatingCTA";
+import { AnimatedCounter } from "@/components/shared/AnimatedCounter";
+import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 
 // Global type declaration for gtag
 declare global {
@@ -248,17 +252,18 @@ export default function ResourcesClient() {
 
   const onSubmit = async (data: NewsletterFormData) => {
     try {
-      // Track analytics event
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'newsletter_signup', {
-          event_category: 'engagement',
-          event_label: data.interest
-        });
-      }
+      trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
+        form_type: 'newsletter_signup',
+        interest: data.interest
+      });
 
       console.log('Newsletter signup:', data);
       toast.success("Thank you for subscribing! Check your email for confirmation.");
     } catch (error) {
+      trackEvent(AnalyticsEvents.FORM_ERROR, {
+        form_type: 'newsletter_signup',
+        error: 'submission_failed'
+      });
       toast.error("Something went wrong. Please try again.");
     }
   };
@@ -272,6 +277,9 @@ export default function ResourcesClient() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 text-white py-20">
         <div className="container mx-auto px-4">
@@ -304,6 +312,7 @@ export default function ResourcesClient() {
                 className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'browse_resources', page: 'resources' })}
               >
                 Browse Resources
               </motion.button>
@@ -312,6 +321,7 @@ export default function ResourcesClient() {
                 className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'download_guides', page: 'resources' })}
               >
                 Download Guides
               </motion.button>
@@ -555,6 +565,7 @@ export default function ResourcesClient() {
                     className="w-full bg-cta-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-cta-700 transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => trackEvent(AnalyticsEvents.DOWNLOAD_CLICKED, { guide: guide.title, page: 'resources' })}
                   >
                     {guide.gated ? "Download Free Guide" : "View Guide"}
                   </motion.button>
@@ -700,6 +711,7 @@ export default function ResourcesClient() {
                   className="bg-cta-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-cta-700 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'newsletter_subscribe', page: 'resources' })}
                 >
                   Subscribe
                 </motion.button>
@@ -735,6 +747,12 @@ export default function ResourcesClient() {
           </motion.div>
         </div>
       </section>
+
+      {/* Floating CTA */}
+      <FloatingCTA 
+        onQuoteClick={() => trackEvent(AnalyticsEvents.QUOTE_REQUESTED, { page: 'resources' })}
+        onDemoClick={() => trackEvent(AnalyticsEvents.DEMO_BOOKED, { page: 'resources' })}
+      />
     </main>
   );
 }

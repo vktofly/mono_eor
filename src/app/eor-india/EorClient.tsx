@@ -617,8 +617,8 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   </motion.div>
                   <div className="text-sm text-blue-200 font-medium">{metric.label}</div>
                 </motion.div>
-              ))}
-            </div>
+            ))}
+          </div>
           </motion.div>
 
           {/* Main Features Grid */}
@@ -658,7 +658,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   label: "Employee Satisfaction"
                 },
                 comparison: "vs 78% industry average",
-                color: "from-purple-500 to-purple-600"
+                color: "from-brand-500 to-brand-600"
               },
               {
                 category: "Complete Toolkit",
@@ -676,7 +676,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   label: "Setup Time"
                 },
                 comparison: "vs 6+ months DIY",
-                color: "from-green-500 to-green-600"
+                color: "from-cta-500 to-cta-600"
               }
             ].map((feature, index) => (
               <motion.div
@@ -811,7 +811,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
           <span className="text-2xl">⏱️</span>
         </motion.div>
         <motion.div 
-          className="absolute bottom-20 right-20 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center opacity-20"
+          className="absolute bottom-20 right-20 w-12 h-12 bg-cta-100 rounded-full flex items-center justify-center opacity-20"
           animate={{ 
             y: [0, 20, 0],
             x: [0, -10, 0]
@@ -834,7 +834,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-200 text-blue-700 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-100 to-brand-200 text-brand-700 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
               <motion.span 
                 className="text-xl"
                 animate={{ scale: [1, 1.2, 1] }}
@@ -857,7 +857,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               {/* Animated Progress Line */}
               <div className="absolute top-20 left-0 right-0 h-2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full hidden lg:block">
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-blue-500 via-green-500 to-emerald-500 rounded-full relative"
+                  className="h-full bg-gradient-to-r from-brand-500 via-cta-500 to-cta-600 rounded-full relative"
                   initial={{ width: "0%" }}
                   whileInView={{ width: "100%" }}
                   transition={{ duration: 3, delay: 0.5, ease: "easeInOut" }}
@@ -899,9 +899,9 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     description: "Employment contracts and tax registrations",
                     time: "4-12 hours",
                     icon: "⚖️",
-                    color: "from-purple-500 to-purple-600",
-                    bgColor: "from-purple-50 to-purple-100",
-                    borderColor: "border-purple-200",
+                    color: "from-brand-500 to-brand-600",
+                    bgColor: "from-brand-50 to-brand-100",
+                    borderColor: "border-brand-200",
                     details: [
                       "Employment contract templates",
                       "Tax registration (PAN, GST)",
@@ -915,9 +915,9 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     description: "Payroll configuration and benefit enrollment",
                     time: "12-24 hours",
                     icon: "👥",
-                    color: "from-green-500 to-green-600",
-                    bgColor: "from-green-50 to-green-100",
-                    borderColor: "border-green-200",
+                    color: "from-cta-500 to-cta-600",
+                    bgColor: "from-cta-50 to-cta-100",
+                    borderColor: "border-cta-200",
                     details: [
                       "Payroll system configuration",
                       "Employee benefit packages",
@@ -931,9 +931,9 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     description: "Employee onboarding and first payroll",
                     time: "24-48 hours", 
                     icon: "🚀",
-                    color: "from-emerald-500 to-emerald-600",
-                    bgColor: "from-emerald-50 to-emerald-100",
-                    borderColor: "border-emerald-200",
+                    color: "from-cta-500 to-cta-600",
+                    bgColor: "from-cta-50 to-cta-100",
+                    borderColor: "border-cta-200",
                     details: [
                       "Employee onboarding portal",
                       "First payroll processing",
@@ -992,7 +992,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                           whileHover={{ scale: 1.05 }}
                         >
                           <span className="text-sm">⏱️</span>
-                          <span className="text-sm font-semibold text-green-600">{item.time}</span>
+                          <span className="text-sm font-semibold text-cta-600">{item.time}</span>
                         </motion.div>
                       </div>
 
@@ -1044,13 +1044,13 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               transition={{ duration: 0.8, delay: 1 }}
               viewport={{ once: true }}
             >
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200">
-                <h3 className="text-2xl font-bold text-blue-800 mb-4">Ready to Get Started?</h3>
-                <p className="text-blue-600 mb-6 max-w-2xl mx-auto">
+              <div className="bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl p-8 border border-brand-200">
+                <h3 className="text-2xl font-bold text-brand-800 mb-4">Ready to Get Started?</h3>
+                <p className="text-brand-600 mb-6 max-w-2xl mx-auto">
                   Join hundreds of companies who&apos;ve streamlined their India expansion with our 48-hour onboarding process.
                 </p>
                 <motion.button 
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => trackEvent('onboarding_cta_clicked')}
@@ -1065,7 +1065,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
 
 
       {/* Enhanced Benefit Distribution with Interactive Sankey */}
-      <section className="py-20 bg-gradient-to-br from-emerald-50 via-white to-blue-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-cta-50 via-white to-brand-50 relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-full h-full" style={{
@@ -1075,7 +1075,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
         
         {/* Floating financial icons */}
         <motion.div 
-          className="absolute top-20 right-20 w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center opacity-20"
+          className="absolute top-20 right-20 w-16 h-16 bg-cta-100 rounded-full flex items-center justify-center opacity-20"
           animate={{ 
             y: [0, -20, 0],
             rotate: [0, 10, -10, 0]
@@ -1112,7 +1112,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-green-200 text-emerald-700 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cta-100 to-cta-200 text-cta-700 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
               <motion.span 
                 className="text-xl"
                 animate={{ rotate: [0, 360] }}
@@ -1140,17 +1140,17 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 viewport={{ once: true }}
               >
                 {/* Gradient overlay */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500"></div>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cta-500 via-brand-500 to-brand-600"></div>
                 
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-cta-500 to-cta-600 rounded-xl flex items-center justify-center">
                     <span className="text-white text-xl">📊</span>
                   </div>
-                  <div>
+            <div>
                     <h3 className="text-2xl font-bold text-text-primary">Interactive Salary Flow</h3>
                     <p className="text-text-secondary">Hover over nodes to see details</p>
-                  </div>
-                </div>
+            </div>
+          </div>
 
                 <div className="h-96 relative">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1195,7 +1195,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                       margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
                     />
                   </ResponsiveContainer>
-                </div>
+            </div>
                 
                 <div className="mt-6 text-center">
                   <motion.p 
@@ -1207,7 +1207,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   >
                     <strong>Example:</strong> ₹1,00,000 monthly salary optimized for maximum take-home pay
                   </motion.p>
-                </div>
+          </div>
               </motion.div>
 
               {/* Detailed Breakdown */}
@@ -1219,8 +1219,8 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 viewport={{ once: true }}
               >
                 {/* Comparison Card */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200">
-                  <h4 className="text-2xl font-bold text-blue-800 mb-6 flex items-center gap-3">
+                <div className="bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl p-8 border border-brand-200">
+                  <h4 className="text-2xl font-bold text-brand-800 mb-6 flex items-center gap-3">
                     <span className="text-2xl">⚖️</span>
                     Traditional vs Optimized
                   </h4>
@@ -1260,17 +1260,17 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
 
                     {/* Optimized Structure */}
                     <motion.div 
-                      className="bg-white rounded-xl p-6 border-2 border-green-200"
+                      className="bg-white rounded-xl p-6 border-2 border-cta-200"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.5 }}
                       viewport={{ once: true }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-cta-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-sm">✅</span>
                         </div>
-                        <h5 className="text-lg font-bold text-green-700">Our Optimized Structure</h5>
+                        <h5 className="text-lg font-bold text-cta-700">Our Optimized Structure</h5>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between">
@@ -1279,12 +1279,12 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-text-secondary">Effective Tax:</span>
-                          <span className="font-semibold text-green-600">₹17,200 (17%)</span>
+                          <span className="font-semibold text-cta-600">₹17,200 (17%)</span>
                         </div>
                         <div className="border-t border-gray-200 pt-2">
                           <div className="flex justify-between">
                             <span className="font-bold text-text-primary">Take-Home Pay:</span>
-                            <span className="font-bold text-green-600">₹82,800</span>
+                            <span className="font-bold text-cta-600">₹82,800</span>
                           </div>
                         </div>
                       </div>
@@ -1292,7 +1292,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
 
                     {/* Savings Highlight */}
                     <motion.div 
-                      className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl p-6 text-white text-center"
+                      className="bg-gradient-to-r from-cta-500 to-cta-600 rounded-xl p-6 text-white text-center"
                       initial={{ opacity: 0, scale: 0.9 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.5, delay: 0.7 }}
@@ -1328,13 +1328,13 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                         viewport={{ once: true }}
                         whileHover={{ scale: 1.05, y: -2 }}
                       >
-                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-cta-500 to-cta-600 rounded-xl flex items-center justify-center">
                           <span className="text-2xl">{benefit.icon}</span>
                         </div>
-                        <div>
+            <div>
                           <div className="font-semibold text-text-primary">{benefit.title}</div>
                           <div className="text-sm text-text-secondary">{benefit.desc}</div>
-                        </div>
+            </div>
                       </motion.div>
                     ))}
                   </div>
@@ -1342,7 +1342,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
 
                 {/* CTA */}
                 <motion.button 
-                  className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => trackEvent('salary_optimizer_cta_clicked')}
@@ -1431,7 +1431,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               >
                 <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 relative overflow-hidden">
                   {/* Gradient overlay */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-cta-500 to-green-500"></div>
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-cta-500 to-cta-600"></div>
                   
                   <div className="flex items-center gap-3 mb-8">
                     <div className="w-12 h-12 bg-gradient-to-r from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
@@ -1522,9 +1522,9 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                       <label className="block text-lg font-semibold text-text-primary mb-4">Company Type</label>
                       <div className="grid grid-cols-1 gap-3">
                         {[
-                          { value: "startup", label: "Startup", desc: "0-50 employees", icon: "🚀", color: "from-blue-500 to-blue-600" },
-                          { value: "scaleup", label: "Scale-up", desc: "50-200 employees", icon: "📈", color: "from-purple-500 to-purple-600" },
-                          { value: "enterprise", label: "Enterprise", desc: "200+ employees", icon: "🏢", color: "from-green-500 to-green-600" }
+                          { value: "startup", label: "Startup", desc: "0-50 employees", icon: "🚀", color: "from-brand-500 to-brand-600" },
+                          { value: "scaleup", label: "Scale-up", desc: "50-200 employees", icon: "📈", color: "from-brand-500 to-brand-600" },
+                          { value: "enterprise", label: "Enterprise", desc: "200+ employees", icon: "🏢", color: "from-cta-500 to-cta-600" }
                         ].map((option) => (
                           <motion.button
                             key={option.value}
@@ -1545,11 +1545,11 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                               <div>
                                 <div className="font-semibold">{option.label}</div>
                                 <div className="text-sm opacity-80">{option.desc}</div>
-                              </div>
+            </div>
                             </div>
                           </motion.button>
-                        ))}
-                      </div>
+          ))}
+        </div>
                     </div>
 
                     {/* Calculate Button */}
@@ -1598,24 +1598,24 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 <div className="space-y-8">
                   {/* Main Savings Card */}
                   <motion.div 
-                    className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-8 border-2 border-green-200 relative overflow-hidden"
+                    className="bg-gradient-to-br from-cta-50 to-cta-100 rounded-2xl p-8 border-2 border-cta-200 relative overflow-hidden"
                     key={`${costs.savings}-${costs.savingsPercentage}`}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
                   >
                     {/* Animated background pattern */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-200 rounded-full opacity-20 -translate-y-16 translate-x-16"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-300 rounded-full opacity-20 translate-y-12 -translate-x-12"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cta-200 rounded-full opacity-20 -translate-y-16 translate-x-16"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-cta-300 rounded-full opacity-20 translate-y-12 -translate-x-12"></div>
                     
                     <div className="relative z-10">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-cta-500 to-cta-600 rounded-xl flex items-center justify-center">
                           <span className="text-white text-xl">💰</span>
                         </div>
                         <div>
-                          <h3 className="text-2xl font-bold text-green-800">Your Annual Savings</h3>
-                          <p className="text-green-600">Compared to traditional setup</p>
+                          <h3 className="text-2xl font-bold text-cta-800">Your Annual Savings</h3>
+                          <p className="text-cta-600">Compared to traditional setup</p>
                         </div>
                       </div>
                       
@@ -1623,7 +1623,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                         {/* Savings Amount */}
                         <div className="text-center">
                           <motion.div 
-                            className="text-6xl font-bold text-green-600 mb-2"
+                            className="text-6xl font-bold text-cta-600 mb-2"
                             key={costs.savings}
                             initial={{ scale: 0.5, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -1632,16 +1632,16 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                             ₹<AnimatedCounter 
                               end={Math.round(costs.savings)} 
                               duration={2}
-                              className="text-6xl font-bold text-green-600"
+                              className="text-6xl font-bold text-cta-600"
                             />
                           </motion.div>
-                          <div className="text-lg text-green-700 font-semibold">Total Annual Savings</div>
+                          <div className="text-lg text-cta-700 font-semibold">Total Annual Savings</div>
                         </div>
                         
                         {/* Savings Percentage */}
                         <div className="text-center">
                           <motion.div 
-                            className="text-6xl font-bold text-emerald-600 mb-2"
+                            className="text-6xl font-bold text-cta-600 mb-2"
                             key={costs.savingsPercentage}
                             initial={{ scale: 0.5, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -1651,10 +1651,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                               end={costs.savingsPercentage} 
                               suffix="%"
                               duration={2}
-                              className="text-6xl font-bold text-emerald-600"
+                              className="text-6xl font-bold text-cta-600"
                             />
                           </motion.div>
-                          <div className="text-lg text-emerald-700 font-semibold">Cost Reduction</div>
+                          <div className="text-lg text-cta-700 font-semibold">Cost Reduction</div>
                         </div>
                       </div>
                     </div>
@@ -1738,7 +1738,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <motion.div 
-                                  className="h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500"
+                                  className="h-2 rounded-full bg-gradient-to-r from-green-500 to-green-600"
                                   initial={{ width: 0 }}
                                   whileInView={{ width: `${(costs.eorCost / costs.firstYearTraditionalCost) * 100}%` }}
                                   transition={{ duration: 1, delay: 1.4 }}
@@ -1760,7 +1760,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
 
                   {/* Additional Benefits */}
                   <motion.div 
-                    className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200"
+                    className="bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl p-8 border border-brand-200"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.6 }}
@@ -1924,7 +1924,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     <p className="text-text-primary font-semibold text-lg">{testimonials[currentTestimonial].author}</p>
                     <p className="text-sm text-text-secondary">{testimonials[currentTestimonial].role} at {testimonials[currentTestimonial].company}</p>
                   </motion.div>
-              </div>
+            </div>
               </motion.div>
             </AnimatePresence>
               </div>
@@ -1995,7 +1995,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               transition={{ delay: 1 }}
             >
               <motion.div
-                className={`w-2 h-2 rounded-full ${isAutoPlaying ? 'bg-green-500' : 'bg-gray-400'}`}
+                className={`w-2 h-2 rounded-full ${isAutoPlaying ? 'bg-cta-500' : 'bg-gray-400'}`}
                 animate={{ scale: isAutoPlaying ? [1, 1.2, 1] : 1 }}
                 transition={{ duration: 1, repeat: isAutoPlaying ? Infinity : 0 }}
               />
@@ -2071,7 +2071,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-green-600">₹4.2L annually</span>
+                <span className="font-medium text-cta-600">₹4.2L annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">
@@ -2094,11 +2094,11 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
           >
             <div className="flex items-center gap-3 mb-4">
               <motion.div 
-                className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"
+                className="w-12 h-12 bg-cta-100 rounded-full flex items-center justify-center"
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-cta-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </motion.div>
@@ -2118,7 +2118,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-green-600">₹12.8L annually</span>
+                <span className="font-medium text-cta-600">₹12.8L annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">
@@ -2141,11 +2141,11 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
           >
             <div className="flex items-center gap-3 mb-4">
               <motion.div 
-                className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center"
+                className="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center"
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </motion.div>
@@ -2165,7 +2165,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-green-600">₹28.5L annually</span>
+                <span className="font-medium text-cta-600">₹28.5L annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">

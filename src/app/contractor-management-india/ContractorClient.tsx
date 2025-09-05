@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ReadingProgress } from "@/components/shared/ReadingProgress";
+import { FloatingCTA } from "@/components/shared/FloatingCTA";
+import { AnimatedCounter } from "@/components/shared/AnimatedCounter";
+import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 
 // Global type declaration for gtag
 declare global {
@@ -228,18 +232,19 @@ export default function ContractorClient() {
 
   const onSubmit = async (data: ContractorFormData) => {
     try {
-      // Track analytics event
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'contractor_form_submit', {
-          event_category: 'engagement',
-          event_label: data.interest,
-          value: data.contractors
-        });
-      }
+      trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
+        form_type: 'contractor_management',
+        interest: data.interest,
+        contractors: data.contractors
+      });
 
       console.log('Contractor form submitted:', data);
       toast.success("Thank you! We'll be in touch within 24 hours.");
     } catch (error) {
+      trackEvent(AnalyticsEvents.FORM_ERROR, {
+        form_type: 'contractor_management',
+        error: 'submission_failed'
+      });
       toast.error("Something went wrong. Please try again.");
     }
   };
@@ -255,6 +260,9 @@ export default function ContractorClient() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 text-white py-20">
         <div className="container mx-auto px-4">
@@ -617,6 +625,7 @@ export default function ContractorClient() {
                 className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'get_started', page: 'contractor_management' })}
               >
                 Get Started Today
               </motion.button>
@@ -625,6 +634,7 @@ export default function ContractorClient() {
                 className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'book_demo', page: 'contractor_management' })}
               >
                 Book a Demo
               </motion.button>
@@ -739,6 +749,7 @@ export default function ContractorClient() {
                 className="w-full bg-cta-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-cta-700 disabled:opacity-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'get_solution', page: 'contractor_management' })}
               >
                 {formState.isSubmitting ? "Sending..." : "Get My Solution"}
               </motion.button>
@@ -746,6 +757,12 @@ export default function ContractorClient() {
           </div>
         </div>
       </section>
+
+      {/* Floating CTA */}
+      <FloatingCTA 
+        onQuoteClick={() => trackEvent(AnalyticsEvents.QUOTE_REQUESTED, { page: 'contractor_management' })}
+        onDemoClick={() => trackEvent(AnalyticsEvents.DEMO_BOOKED, { page: 'contractor_management' })}
+      />
     </main>
   );
 }

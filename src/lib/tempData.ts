@@ -4,7 +4,7 @@ export const siteSettings = {
     process.env.NEXT_PUBLIC_CALENDLY_EMBED_URL ||
     "https://calendly.com/sample/intro-call",
   navLinks: [
-    { label: "EOR India", href: "/eor-india" },
+    { label: "Home", href: "/" },
     { label: "Payroll", href: "/payroll-in-india" },
     { label: "Contractors", href: "/contractor-management-india" },
     { label: "Pricing", href: "/pricing" },

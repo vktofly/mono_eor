@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ReadingProgress } from "@/components/shared/ReadingProgress";
+import { FloatingCTA } from "@/components/shared/FloatingCTA";
+import { AnimatedCounter } from "@/components/shared/AnimatedCounter";
+import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 
 // Global type declaration for gtag
 declare global {
@@ -279,20 +283,21 @@ export default function PricingClient() {
 
   const onSubmit = async (data: PricingFormData) => {
     try {
-      // Track analytics event
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'pricing_form_submit', {
-          event_category: 'engagement',
-          event_label: data.interest,
-          value: data.employees
-        });
-      }
+      trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
+        form_type: 'pricing_quote',
+        interest: data.interest,
+        employees: data.employees
+      });
 
       // Here you would typically send to your backend
       console.log('Pricing form submitted:', data);
       
       toast.success("Thank you! We'll be in touch within 24 hours.");
     } catch (error) {
+      trackEvent(AnalyticsEvents.FORM_ERROR, {
+        form_type: 'pricing_quote',
+        error: 'submission_failed'
+      });
       toast.error("Something went wrong. Please try again.");
     }
   };
@@ -304,6 +309,9 @@ export default function PricingClient() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 text-white py-20">
         <div className="container mx-auto px-4">
@@ -429,7 +437,14 @@ export default function PricingClient() {
                 </ul>
 
                 <motion.button
-                  onClick={() => handleTierSelect(tier.name)}
+                  onClick={() => {
+                    handleTierSelect(tier.name);
+                    trackEvent(AnalyticsEvents.CTA_CLICKED, { 
+                      cta_type: 'pricing_tier', 
+                      tier: tier.name.toLowerCase(),
+                      page: 'pricing' 
+                    });
+                  }}
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-all ${
                     tier.ctaVariant === "primary"
                       ? "bg-cta-600 text-white hover:bg-cta-700"
@@ -519,6 +534,7 @@ export default function PricingClient() {
                 className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'get_started', page: 'pricing' })}
               >
                 Get Started Today
               </motion.button>
@@ -527,6 +543,7 @@ export default function PricingClient() {
                 className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'book_demo', page: 'pricing' })}
               >
                 Book a Demo
               </motion.button>
@@ -642,6 +659,7 @@ export default function PricingClient() {
                 className="w-full bg-cta-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-cta-700 disabled:opacity-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'get_quote', page: 'pricing' })}
               >
                 {formState.isSubmitting ? "Sending..." : "Get My Quote"}
               </motion.button>
@@ -649,6 +667,12 @@ export default function PricingClient() {
           </div>
         </div>
       </section>
+
+      {/* Floating CTA */}
+      <FloatingCTA 
+        onQuoteClick={() => trackEvent(AnalyticsEvents.QUOTE_REQUESTED, { page: 'pricing' })}
+        onDemoClick={() => trackEvent(AnalyticsEvents.DEMO_BOOKED, { page: 'pricing' })}
+      />
     </main>
   );
 }
