@@ -304,7 +304,7 @@ export default function PricingClient() {
 
   const handleTierSelect = (tierName: string) => {
     setSelectedTier(tierName);
-    setValue("interest", tierName.toLowerCase() as any);
+    setValue("interest", tierName.toLowerCase() as "startup" | "professional" | "enterprise");
   };
 
   return (

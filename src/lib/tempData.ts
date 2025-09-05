@@ -5,7 +5,6 @@ export const siteSettings = {
     "https://calendly.com/sample/intro-call",
   navLinks: [
     { label: "Home", href: "/" },
-    { label: "Payroll", href: "/payroll-in-india" },
     { label: "Contractors", href: "/contractor-management-india" },
     { label: "Pricing", href: "/pricing" },
     { label: "Resources", href: "/resources" },
