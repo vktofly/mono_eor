@@ -84,7 +84,7 @@ export const trackPageView = (url: string, title?: string) => {
 };
 
 // Form tracking with enhanced parameters
-export const trackFormSubmission = (formType: string, formData: any) => {
+export const trackFormSubmission = (formType: string, formData: Record<string, unknown>) => {
   trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
     form_type: formType,
     form_source: window.location.pathname,
@@ -95,7 +95,7 @@ export const trackFormSubmission = (formType: string, formData: any) => {
 };
 
 // CTA tracking with context
-export const trackCTAClick = (ctaType: string, context: any) => {
+export const trackCTAClick = (ctaType: string, context: Record<string, unknown>) => {
   trackEvent(AnalyticsEvents.CTA_CLICKED, {
     cta_type: ctaType,
     cta_location: context.location || window.location.pathname,
@@ -105,14 +105,14 @@ export const trackCTAClick = (ctaType: string, context: any) => {
 };
 
 // Lead quality scoring
-const determineLeadQuality = (formData: any): string => {
+const determineLeadQuality = (formData: Record<string, unknown>): string => {
   const score = calculateLeadScore(formData);
   if (score >= 8) return 'high';
   if (score >= 5) return 'medium';
   return 'low';
 };
 
-const calculateLeadScore = (formData: any): number => {
+const calculateLeadScore = (formData: Record<string, unknown>): number => {
   let score = 0;
   
   // Company size scoring
@@ -178,8 +178,8 @@ export const initializeAnalytics = async () => {
     document.head.appendChild(script);
     
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function() {
-      window.dataLayer.push(arguments);
+    window.gtag = function(...args: unknown[]) {
+      window.dataLayer.push(args);
     };
     window.gtag('js', new Date());
     window.gtag('config', settings.ga4Id);
@@ -218,8 +218,8 @@ export const initializeAnalytics = async () => {
 // Type declarations for global analytics objects
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-    hj: (...args: any[]) => void;
+    gtag: (...args: unknown[]) => void;
+    dataLayer: unknown[];
+    hj: (...args: unknown[]) => void;
   }
 }

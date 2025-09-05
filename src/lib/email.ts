@@ -24,7 +24,7 @@ export class EmailService {
   private fromName: string;
   private adminEmail: string;
   private supportEmail: string;
-  private awsConfig: any;
+  private awsConfig: Record<string, string | undefined>;
 
   constructor() {
     const emailConfig = getEmailConfig();
@@ -114,7 +114,7 @@ Next Steps: Follow up within 24 hours to maintain lead quality.
     });
   }
 
-  async sendQuoteRequestNotification(formData: any) {
+  async sendQuoteRequestNotification(formData: Record<string, unknown>) {
     const subject = `New Quote Request - ${formData.company || 'Unknown Company'}`;
     
     const html = `
@@ -145,7 +145,7 @@ Next Steps: Follow up within 24 hours to maintain lead quality.
     });
   }
 
-  async sendDemoBookingNotification(formData: any) {
+  async sendDemoBookingNotification(formData: Record<string, unknown>) {
     const subject = `New Demo Booking - ${formData.company || 'Unknown Company'}`;
     
     const html = `

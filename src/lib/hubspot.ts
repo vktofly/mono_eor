@@ -34,7 +34,7 @@ export class HubSpotService {
     this.portalId = config.portalId || '';
   }
 
-  private async makeRequest(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'PATCH' = 'GET', data?: any) {
+  private async makeRequest(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'PATCH' = 'GET', data?: Record<string, unknown>) {
     if (!this.accessToken) {
       throw new Error('HubSpot access token not configured');
     }
@@ -136,7 +136,7 @@ export class HubSpotService {
     return this.createContact(contact);
   }
 
-  async logFormSubmission(formData: any, formName: string) {
+  async logFormSubmission(formData: Record<string, unknown>, formName: string) {
     const contact = {
       email: formData.email,
       firstname: formData.firstName || formData.firstname,

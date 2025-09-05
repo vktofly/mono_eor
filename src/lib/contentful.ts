@@ -23,9 +23,9 @@ export async function fetchSiteSettings(): Promise<SiteSettings | null> {
       content_type: "siteSettings",
       limit: 1,
     });
-    const item = res.items[0] as Entry<any> | undefined;
+    const item = res.items[0] as Entry<Record<string, unknown>> | undefined;
     if (!item) return null;
-    const fields = item.fields as any;
+    const fields = item.fields as Record<string, unknown>;
     return { siteName: fields.siteName, calendlyUrl: fields.calendlyUrl, navLinks: fields.navLinks };
   } catch {
     return null;
