@@ -1,8 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+MonoHR marketing site (Next.js 14, Tailwind v4, Contentful, AWS SES).
 
 ## Getting Started
 
-First, run the development server:
+Create a `.env.local` with these variables, then run the dev server:
+
+```
+CONTENTFUL_SPACE_ID=
+CONTENTFUL_ENV=master
+CONTENTFUL_CDA_TOKEN=
+CONTENTFUL_PREVIEW_TOKEN=
+
+HUBSPOT_PRIVATE_APP_TOKEN=
+
+NEXT_PUBLIC_GA4_ID=
+NEXT_PUBLIC_GTM_ID=
+NEXT_PUBLIC_HOTJAR_ID=
+
+CALENDLY_URL=
+
+AWS_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+SES_FROM_EMAIL=no-reply@monohr.com
+SES_SALES_TO=sales@monohr.com
+```
 
 ```bash
 npm run dev

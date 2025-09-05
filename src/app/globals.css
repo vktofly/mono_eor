@@ -2,25 +2,61 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0F172A; /* neutral text */
 }
 
+/* Tailwind v4 design tokens */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Brand palette (Premium + subdued) */
+  --color-brand-50: #EEF3FF;
+  --color-brand-100: #D6E4FF;
+  --color-brand-200: #AEC7FF;
+  --color-brand-300: #85AAFF;
+  --color-brand-400: #5C8DFF;
+  --color-brand-500: #2155CD;
+  --color-brand-600: #153F9E;
+  --color-brand-700: #0F2F7A;
+  --color-brand-800: #0A1F56;
+  --color-brand-900: #050F33;
+
+  /* CTA (orange) */
+  --color-cta-50: #FFF7ED;
+  --color-cta-100: #FFEDD5;
+  --color-cta-200: #FED7AA;
+  --color-cta-300: #FFD9B3;
+  --color-cta-400: #FDBA74;
+  --color-cta-500: #FF7A00;
+  --color-cta-600: #E16400;
+  --color-cta-700: #C2410C;
+  --color-cta-800: #9A3412;
+  --color-cta-900: #7C2D12;
+
+  /* Neutrals */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748B;
+  --color-line: #E2E8F0;
+  --color-bg: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+
+  /* Map to utility tokens */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Lock to light theme for MVP */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Basic layout helpers */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
