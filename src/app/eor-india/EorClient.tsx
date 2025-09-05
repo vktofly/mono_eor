@@ -319,6 +319,8 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
       toast.success("Thanks! We'll reach out shortly.");
       trackEvent('hero_form_success');
       reset();
+      // Navigate to contact page after successful submission
+      window.location.href = '/contact';
     } catch {
       toast.error("Something went wrong. Please try again.");
       trackEvent('hero_form_error');
@@ -382,7 +384,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
               <span>4.9/5 from 500+ companies</span>
-            </div>
+          </div>
             <div className="w-px h-4 bg-white/30"></div>
             <span>500+ employees onboarded</span>
             <div className="w-px h-4 bg-white/30"></div>
@@ -1826,12 +1828,15 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     className="w-full bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => trackEvent('calculator_quote_requested', { 
-                      employees: calculatorData.employees,
-                      avgSalary: calculatorData.avgSalary,
-                      companyType: calculatorData.companyType,
-                      savings: costs.savings
-                    })}
+                    onClick={() => {
+                      trackEvent('calculator_quote_requested', { 
+                        employees: calculatorData.employees,
+                        avgSalary: calculatorData.avgSalary,
+                        companyType: calculatorData.companyType,
+                        savings: costs.savings
+                      });
+                      window.location.href = '/contact';
+                    }}
                   >
                     <motion.span
                       className="relative z-10 flex items-center justify-center gap-3"
@@ -2570,7 +2575,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               className="bg-cta-500 hover:bg-cta-600 text-white font-medium py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => trackEvent('faq_contact_clicked')}
+              onClick={() => {
+                trackEvent('faq_contact_clicked');
+                window.location.href = '/contact';
+              }}
             >
               Contact Our Experts
             </motion.button>
