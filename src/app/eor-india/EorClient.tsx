@@ -391,10 +391,10 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             <span>99.8% compliance rate</span>
           </div>
           
-          {/* Urgency Badge */}
-          <div className="mt-6 inline-flex items-center gap-2 bg-cta-500/20 border border-cta-400/30 rounded-full px-4 py-2">
-            <div className="w-2 h-2 bg-cta-400 rounded-full animate-pulse"></div>
-            <span className="text-cta-100 text-sm font-medium">Q1 2024: Free Setup + 2 Months Free (Save $5,000)</span>
+          {/* Enhanced Urgency Badge */}
+          <div className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-400/30 rounded-full px-4 py-2">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            <span className="text-red-100 text-sm font-medium">🔥 Limited Time: Free Setup + 2 Months Free (Save $5,000) - Only 47 spots left!</span>
           </div>
           
           {/* Email capture form */}
@@ -434,15 +434,31 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             )}
           </div>
 
-          {/* Trust indicators */}
+          {/* Enhanced Trust indicators */}
           <div className="mt-12">
             <div className="text-center mb-6">
               <p className="text-white/80 text-sm mb-2">Trusted by 500+ Global Companies</p>
-              <div className="flex items-center justify-center gap-2 text-cta-200">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="text-xs font-medium">$2M+ saved annually</span>
+              <div className="flex items-center justify-center gap-4 text-cta-200">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs font-medium">$2M+ saved annually</span>
+                </div>
+                <div className="w-px h-4 bg-white/30"></div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs font-medium">SOC 2 Certified</span>
+                </div>
+                <div className="w-px h-4 bg-white/30"></div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs font-medium">GDPR Compliant</span>
+                </div>
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-90">
@@ -796,7 +812,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 window.location.href = '/contact';
               }}
             >
-              Get Your Complete India Solution
+              Get Started in 48 Hours - Free Setup
             </motion.button>
             <p className="text-blue-200 text-sm mt-4">
               ✓ 48-hour setup • ✓ 100% compliance • ✓ 95% employee satisfaction • ✓ Join 500+ companies
@@ -1077,7 +1093,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     window.location.href = '/contact';
                   }}
                 >
-                  Start Your 48-Hour Journey
+                  Start Now - Save $5,000
                 </motion.button>
               </div>
             </motion.div>
@@ -1372,7 +1388,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     window.location.href = '/contact';
                   }}
                 >
-                  Optimize Your Team&apos;s Salaries
+                  Save ₹17,800 Per Employee - Start Now
                 </motion.button>
               </motion.div>
             </div>
@@ -1849,7 +1865,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                         ease: "easeInOut"
                       }}
                     >
-                      <span>Get Your Custom Quote</span>
+                      <span>Get My Free Quote Now</span>
                       <span>🚀</span>
                     </motion.span>
                     <motion.div
@@ -2427,7 +2443,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   window.location.href = '/contact';
                 }}
               >
-                Get Your Free Comparison Report
+                See Your Savings - Free Report
               </motion.button>
               <p className="text-sm text-text-secondary mt-3">See exactly how much you'll save with MonoHR</p>
             </motion.div>
@@ -2640,7 +2656,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                   ease: "easeInOut"
                 }}
               >
-                Get Free Quote
+                Get Free Quote - Save $5K
               </motion.span>
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -2658,7 +2674,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 window.location.href = '/contact';
               }}
             >
-              Book Demo
+              Book Free Demo
             </motion.button>
           </motion.div>
         </div>
