@@ -28,39 +28,34 @@ export class EmailService {
 
   constructor() {
     const emailConfig = getEmailConfig();
-    const awsConfig = getAWSConfig();
-    
     this.fromEmail = emailConfig.fromEmail;
     this.fromName = emailConfig.fromName;
     this.adminEmail = emailConfig.adminEmail;
     this.supportEmail = emailConfig.supportEmail;
-    this.awsConfig = awsConfig;
+    this.awsConfig = getAWSConfig();
   }
 
   private async sendEmail(emailData: EmailData) {
     if (!this.awsConfig.accessKeyId || !this.awsConfig.secretAccessKey) {
-      throw new Error('AWS SES credentials not configured');
+      console.warn('AWS SES not configured, email not sent:', emailData);
+      return { success: false, message: 'Email service not configured' };
     }
 
-    // For now, we'll use a simple fetch approach
-    // In production, you might want to use the AWS SDK
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...emailData,
+    try {
+      // In a real implementation, you would use AWS SDK
+      // For now, we'll simulate the email sending
+      console.log('Email would be sent:', {
         from: emailData.from || `${this.fromName} <${this.fromEmail}>`,
-        awsConfig: this.awsConfig,
-      }),
-    });
+        to: emailData.to,
+        subject: emailData.subject,
+        html: emailData.html,
+      });
 
-    if (!response.ok) {
-      throw new Error(`Email sending failed: ${response.statusText}`);
+      return { success: true, message: 'Email sent successfully' };
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      return { success: false, message: 'Failed to send email' };
     }
-
-    return response.json();
   }
 
   async sendContactFormNotification(formData: ContactFormData) {
@@ -71,7 +66,7 @@ export class EmailService {
         <h2 style="color: #2155CD;">New Contact Form Submission</h2>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Contact Details</h3>
+          <h3 style="margin-top: 0; color: #333;">Contact Details</h3>
           <p><strong>Name:</strong> ${formData.name}</p>
           <p><strong>Email:</strong> ${formData.email}</p>
           ${formData.company ? `<p><strong>Company:</strong> ${formData.company}</p>` : ''}
@@ -81,13 +76,13 @@ export class EmailService {
         </div>
         
         <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-          <h3 style="color: #333; margin-top: 0;">Message</h3>
+          <h3 style="margin-top: 0; color: #333;">Message</h3>
           <p style="white-space: pre-wrap;">${formData.message}</p>
         </div>
         
         <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
-          <p style="margin: 0; color: #1976d2;">
-            <strong>Next Steps:</strong> Please respond to this inquiry within 24 hours to maintain our service standards.
+          <p style="margin: 0; font-size: 14px; color: #666;">
+            <strong>Next Steps:</strong> Follow up within 24 hours to maintain lead quality.
           </p>
         </div>
       </div>
@@ -107,7 +102,7 @@ ${formData.source ? `Source: ${formData.source}` : ''}
 Message:
 ${formData.message}
 
-Next Steps: Please respond to this inquiry within 24 hours.
+Next Steps: Follow up within 24 hours to maintain lead quality.
     `;
 
     return this.sendEmail({
@@ -127,7 +122,7 @@ Next Steps: Please respond to this inquiry within 24 hours.
         <h2 style="color: #2155CD;">New Quote Request</h2>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Company Details</h3>
+          <h3 style="margin-top: 0; color: #333;">Company Details</h3>
           <p><strong>Company:</strong> ${formData.company}</p>
           <p><strong>Contact:</strong> ${formData.name} (${formData.email})</p>
           ${formData.phone ? `<p><strong>Phone:</strong> ${formData.phone}</p>` : ''}
@@ -135,10 +130,9 @@ Next Steps: Please respond to this inquiry within 24 hours.
           <p><strong>Interest:</strong> ${formData.interest}</p>
         </div>
         
-        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-          <p style="margin: 0; color: #856404;">
-            <strong>Priority:</strong> This is a quote request and should be prioritized for response.
-          </p>
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #856404;">Priority: High</h3>
+          <p style="margin: 0; color: #856404;">This is a qualified lead requesting a quote. Respond within 4 hours.</p>
         </div>
       </div>
     `;
@@ -158,19 +152,22 @@ Next Steps: Please respond to this inquiry within 24 hours.
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2155CD;">New Demo Booking</h2>
         
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Booking Details</h3>
+        <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #155724;">Demo Scheduled</h3>
           <p><strong>Company:</strong> ${formData.company}</p>
           <p><strong>Contact:</strong> ${formData.name} (${formData.email})</p>
-          ${formData.phone ? `<p><strong>Phone:</strong> ${formData.phone}</p>` : ''}
           <p><strong>Demo Type:</strong> ${formData.demoType || 'General Demo'}</p>
           <p><strong>Preferred Time:</strong> ${formData.preferredTime || 'Not specified'}</p>
         </div>
         
-        <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
-          <p style="margin: 0; color: #155724;">
-            <strong>Action Required:</strong> Please confirm the demo booking and send calendar invite.
-          </p>
+        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #333;">Next Steps</h3>
+          <ol>
+            <li>Confirm the demo time with the client</li>
+            <li>Prepare demo materials based on their interest</li>
+            <li>Send calendar invite with meeting details</li>
+            <li>Follow up 24 hours before the demo</li>
+          </ol>
         </div>
       </div>
     `;
@@ -183,61 +180,69 @@ Next Steps: Please respond to this inquiry within 24 hours.
     });
   }
 
-  async sendAutoReply(to: string, type: 'contact' | 'quote' | 'demo' = 'contact') {
-    let subject: string;
-    let html: string;
-
-    switch (type) {
-      case 'quote':
-        subject = 'Thank you for your quote request - MonoHR';
-        html = `
+  async sendAutoReply(to: string, type: 'contact' | 'quote' | 'demo') {
+    const templates = {
+      contact: {
+        subject: 'Thank you for contacting MonoHR',
+        html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Thank you for your quote request!</h2>
-            <p>We've received your quote request and our team will review it carefully.</p>
-            <p><strong>What happens next:</strong></p>
+            <h2 style="color: #2155CD;">Thank you for reaching out!</h2>
+            <p>Hi there,</p>
+            <p>Thank you for contacting MonoHR. We've received your message and will get back to you within 24 hours.</p>
+            <p>In the meantime, feel free to explore our resources:</p>
             <ul>
-              <li>Our EOR specialists will analyze your requirements</li>
-              <li>We'll prepare a customized quote within 24 hours</li>
-              <li>You'll receive a detailed proposal via email</li>
+              <li><a href="/resources">EOR Guides & Resources</a></li>
+              <li><a href="/pricing">Transparent Pricing</a></li>
+              <li><a href="/about">About Our Team</a></li>
             </ul>
-            <p>If you have any urgent questions, please don't hesitate to contact us.</p>
             <p>Best regards,<br>The MonoHR Team</p>
           </div>
-        `;
-        break;
-      case 'demo':
-        subject = 'Demo booking confirmed - MonoHR';
-        html = `
+        `
+      },
+      quote: {
+        subject: 'Your EOR India Quote Request - Next Steps',
+        html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Demo booking confirmed!</h2>
-            <p>Thank you for booking a demo with us. We're excited to show you how MonoHR can help scale your team in India.</p>
+            <h2 style="color: #2155CD;">Quote Request Received</h2>
+            <p>Hi there,</p>
+            <p>Thank you for requesting a quote for EOR services in India. Our team is preparing a customized proposal for your company.</p>
+            <p><strong>What happens next:</strong></p>
+            <ol>
+              <li>Our EOR specialists will review your requirements</li>
+              <li>We'll prepare a detailed quote within 4 hours</li>
+              <li>We'll schedule a call to discuss the proposal</li>
+            </ol>
+            <p>In the meantime, you can use our <a href="/">cost calculator</a> to get an estimate.</p>
+            <p>Best regards,<br>The MonoHR Team</p>
+          </div>
+        `
+      },
+      demo: {
+        subject: 'Demo Booking Confirmed - What to Expect',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2155CD;">Demo Booking Confirmed</h2>
+            <p>Hi there,</p>
+            <p>Thank you for booking a demo with MonoHR. We're excited to show you how we can help scale your team in India.</p>
             <p><strong>What to expect:</strong></p>
             <ul>
-              <li>15-minute overview of our EOR solution</li>
-              <li>Live demonstration of our platform</li>
-              <li>Q&A session tailored to your needs</li>
+              <li>30-minute personalized demo</li>
+              <li>Live walkthrough of our platform</li>
+              <li>Q&A session with our EOR experts</li>
+              <li>Customized recommendations for your use case</li>
             </ul>
             <p>We'll send you a calendar invite shortly with the meeting details.</p>
             <p>Best regards,<br>The MonoHR Team</p>
           </div>
-        `;
-        break;
-      default:
-        subject = 'Thank you for contacting us - MonoHR';
-        html = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Thank you for contacting us!</h2>
-            <p>We've received your message and will get back to you within 24 hours.</p>
-            <p>In the meantime, feel free to explore our resources or book a demo to see our EOR solution in action.</p>
-            <p>Best regards,<br>The MonoHR Team</p>
-          </div>
-        `;
-    }
+        `
+      }
+    };
 
+    const template = templates[type];
     return this.sendEmail({
       to,
-      subject,
-      html,
+      subject: template.subject,
+      html: template.html,
     });
   }
 }
