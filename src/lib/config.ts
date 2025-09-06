@@ -1,36 +1,122 @@
-import { fetchSiteSettings } from "@/lib/contentful";
-import { siteSettings as fallback } from "@/lib/tempData";
+import { contentfulService, SiteSettings } from './contentful';
 
-export async function loadSiteSettings() {
-  const fromCf = await fetchSiteSettings();
+// Default site settings (fallback)
+const defaultSiteSettings: SiteSettings = {
+  siteName: "MonoHR",
+  navLinks: [
+    {
+      label: "EOR India",
+      href: "/eor-india"
+    },
+    {
+      label: "Pricing",
+      href: "/pricing"
+    },
+    {
+      label: "Contractor Management",
+      href: "/contractor-management-india"
+    },
+    {
+      label: "Resources",
+      href: "/resources"
+    },
+    {
+      label: "About",
+      href: "/about"
+    },
+    {
+      label: "Contact",
+      href: "/contact"
+    }
+  ],
+  footerLinks: [
+    {
+      label: "Privacy Policy",
+      href: "/privacy"
+    },
+    {
+      label: "Terms of Service",
+      href: "/terms"
+    },
+    {
+      label: "Cookie Policy",
+      href: "/cookies"
+    }
+  ],
+  defaultSEO: {
+    title: "EOR India | Employer of Record Services | MonoHR - 48 Hour Setup",
+    description: "Scale your team in India in just 48 hours with MonoHR's EOR services. 40% cost savings, 100% compliance, India-first expertise.",
+    keywords: ["EOR India", "Employer of Record India", "India EOR services", "hire in India"]
+  },
+  cookiesText: "We use cookies to analyze traffic and improve your experience. You can accept or reject analytics cookies."
+};
+
+// Cache for site settings
+let siteSettingsCache: SiteSettings | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export async function loadSiteSettings(): Promise<SiteSettings> {
+  // Check if we have valid cached data
+  if (siteSettingsCache && Date.now() - cacheTimestamp < CACHE_DURATION) {
+    return siteSettingsCache;
+  }
+
+  try {
+    // Try to load from Contentful
+    const contentfulSettings = await contentfulService.getSiteSettings();
+    
+    if (contentfulSettings) {
+      siteSettingsCache = contentfulSettings;
+      cacheTimestamp = Date.now();
+      return contentfulSettings;
+    }
+  } catch (error) {
+    console.warn('Failed to load site settings from Contentful, using defaults:', error);
+  }
+
+  // Fallback to default settings
+  return defaultSiteSettings;
+}
+
+// Function to clear cache (useful for development)
+export function clearSiteSettingsCache(): void {
+  siteSettingsCache = null;
+  cacheTimestamp = 0;
+}
+
+// Function to get cached settings without async call
+export function getCachedSiteSettings(): SiteSettings | null {
+  return siteSettingsCache;
+}
+
+// Calendly URL configuration
+export function getCalendlyUrl(): string {
+  return process.env.CALENDLY_URL || 'https://calendly.com/monohr/eor-consultation';
+}
+
+// Email configuration
+export function getEmailConfig() {
   return {
-    name: fromCf?.siteName || process.env.NEXT_PUBLIC_SITE_NAME || fallback.name,
-    calendlyUrl: fromCf?.calendlyUrl || process.env.NEXT_PUBLIC_CALENDLY_EMBED_URL || fallback.calendlyUrl,
-    navLinks: fromCf?.navLinks || fallback.navLinks,
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-    ga4Id: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
-    gtmId: process.env.NEXT_PUBLIC_GTM_ID,
-    hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID,
-    hotjarVersion: process.env.NEXT_PUBLIC_HOTJAR_VERSION || '6',
+    fromEmail: process.env.FROM_EMAIL || 'noreply@monohr.com',
+    toEmail: process.env.TO_EMAIL || 'contact@monohr.com',
+    replyTo: process.env.REPLY_TO_EMAIL || 'contact@monohr.com',
   };
 }
 
-export const getEmailConfig = () => ({
-  fromEmail: process.env.SES_FROM_EMAIL || 'noreply@yourdomain.com',
-  fromName: process.env.SES_FROM_NAME || 'MonoHR',
-  adminEmail: process.env.SES_ADMIN_EMAIL || 'admin@yourdomain.com',
-  supportEmail: process.env.SES_SUPPORT_EMAIL || 'support@yourdomain.com',
-});
+// AWS configuration
+export function getAWSConfig() {
+  return {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+    region: process.env.AWS_REGION || 'us-east-1',
+  };
+}
 
-export const getHubSpotConfig = () => ({
-  accessToken: process.env.HUBSPOT_ACCESS_TOKEN,
-  portalId: process.env.HUBSPOT_PORTAL_ID,
-});
-
-export const getAWSConfig = () => ({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION || 'us-east-1',
-});
-
-
+// HubSpot configuration
+export function getHubSpotConfig() {
+  return {
+    accessToken: process.env.HUBSPOT_ACCESS_TOKEN || '',
+    portalId: process.env.HUBSPOT_PORTAL_ID || '',
+  };
+}

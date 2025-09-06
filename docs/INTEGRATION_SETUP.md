@@ -38,8 +38,8 @@ NEXT_PUBLIC_HOTJAR_VERSION=6
 ### Calendly Integration
 ```bash
 # Your Calendly scheduling link
-NEXT_PUBLIC_CALENDLY_EMBED_URL=https://calendly.com/your-username/intro-call
-NEXT_PUBLIC_CALENDLY_USERNAME=your-username
+NEXT_PUBLIC_CALENDLY_EMBED_URL=https://calendly.com/vktofly/30min
+NEXT_PUBLIC_CALENDLY_USERNAME=Monohr
 ```
 
 ### AWS SES Email Configuration
@@ -107,7 +107,7 @@ NEXT_PUBLIC_SITE_NAME=MonoHR
 
 1. **Create a Hotjar account** at [hotjar.com](https://hotjar.com)
 2. **Add your website** to Hotjar
-3. **Get your Site ID** from the tracking code
+3. **Get your Site ID** from the tracking code 6512862
 
 ### 6. Calendly Setup
 

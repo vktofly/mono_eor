@@ -21,7 +21,11 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com
 # CONTENTFUL CMS (Optional)
 # ===========================================
 CONTENTFUL_SPACE_ID=your_contentful_space_id_here
-CONTENTFUL_ACCESS_TOKEN=your_contentful_access_token_here
+CONTENTFUL_CDA_TOKEN=your_contentful_access_token_here
+CONTENTFUL_PREVIEW_TOKEN=your_contentful_preview_token_here
+CONTENTFUL_ENV=master
+CONTENTFUL_PREVIEW_SECRET=your_preview_secret_here
+CONTENTFUL_WEBHOOK_SECRET=your_webhook_secret_here
 
 # ===========================================
 # HUBSPOT CRM
