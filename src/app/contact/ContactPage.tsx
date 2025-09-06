@@ -21,7 +21,7 @@ const contactFormSchema = z.object({
   ),
   employees: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
-  source: z.string().default("contact_page"),
+  source: z.string(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
