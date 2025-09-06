@@ -37,9 +37,10 @@ export const AB_TESTS: ABTest[] = [
       {
         id: "control",
         name: "Control - Scale your team in India without the complexity",
-        weight: 0.5,
+        weight: 1.0,
         config: {
           headline: "Scale your team in India without the complexity",
+          animatedWords: ["Scale", "Build"],
           subheadline: "Hire top Indian talent in 48 hours with our EOR services. 40% cost savings, 100% compliance, India-first expertise.",
           ctaText: "Get Started",
           ctaColor: "cta-500"
@@ -48,7 +49,7 @@ export const AB_TESTS: ABTest[] = [
       {
         id: "variant_a",
         name: "Variant A - Speed Focus",
-        weight: 0.25,
+        weight: 0.0,
         config: {
           headline: "Hire in India in 48 Hours - No Entity Required",
           subheadline: "Skip 6-month entity setup. Start hiring immediately with our EOR services. 40% cost savings, 100% compliance.",
@@ -59,7 +60,7 @@ export const AB_TESTS: ABTest[] = [
       {
         id: "variant_b",
         name: "Variant B - Cost Focus",
-        weight: 0.25,
+        weight: 0.0,
         config: {
           headline: "Save 40% on India Expansion with EOR Services",
           subheadline: "Hire top Indian talent without the complexity. 48-hour setup, 100% compliance, India-first expertise.",
@@ -264,6 +265,13 @@ export class ABTestingService {
       conversionRates: {},
       statisticalSignificance: 0
     };
+  }
+
+  public resetUserVariants() {
+    // Clear existing variants to force reassignment
+    this.userVariants.clear();
+    this.saveVariants();
+    this.assignVariants();
   }
 }
 

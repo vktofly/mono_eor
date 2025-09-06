@@ -28,29 +28,50 @@ export async function POST(request: NextRequest) {
     const emailConfig = getEmailConfig();
     const awsConfig = getAWSConfig();
 
-    // Check if AWS credentials are configured
-    if (!awsConfig.accessKeyId || !awsConfig.secretAccessKey) {
-      console.warn('AWS SES credentials not configured, using simulation mode');
-      
-      // Simulate email sending for development
-      console.log('Simulating email send:', {
-        to: emailData.to,
-        from: emailData.from,
-        subject: emailData.subject,
-        replyTo: emailData.replyTo,
-        cc: emailData.cc,
-        bcc: emailData.bcc,
-      });
+           // Check if AWS credentials are configured
+           if (!awsConfig.accessKeyId || !awsConfig.secretAccessKey) {
+             console.warn('AWS SES credentials not configured, using simulation mode');
 
-      const messageId = `sim-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+             // Simulate email sending for development
+             console.log('Simulating email send:', {
+               to: emailData.to,
+               from: emailData.from,
+               subject: emailData.subject,
+               replyTo: emailData.replyTo,
+               cc: emailData.cc,
+               bcc: emailData.bcc,
+             });
 
-      return NextResponse.json({
-        success: true,
-        messageId,
-        message: 'Email simulated successfully (AWS SES not configured)',
-        simulated: true,
-      });
-    }
+             const messageId = `sim-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+             return NextResponse.json({
+               success: true,
+               messageId,
+               message: 'Email simulated successfully (AWS SES not configured)',
+               simulated: true,
+             });
+           }
+
+           // Check if we're in development mode and should use simulation
+           const isDevelopment = process.env.NODE_ENV === 'development';
+           const shouldSimulate = isDevelopment && (
+             emailData.from.includes('noreply@monohr.com') || 
+             emailData.from.includes('contact@monohr.com') ||
+             emailData.to.some(email => email.includes('@example.com'))
+           );
+
+           if (shouldSimulate) {
+             console.log('Development mode: Simulating email send for unverified addresses');
+             
+             const messageId = `sim-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+             return NextResponse.json({
+               success: true,
+               messageId,
+               message: 'Email simulated successfully (development mode - unverified addresses)',
+               simulated: true,
+             });
+           }
 
     // Initialize AWS SES client
     const sesClient = new SESClient({
@@ -110,16 +131,44 @@ export async function POST(request: NextRequest) {
       message: 'Email sent successfully via AWS SES',
     });
 
-  } catch (error) {
-    console.error('Error sending email:', error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to send email',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
+         } catch (error) {
+           console.error('Error sending email:', error);
+           
+           // Handle specific AWS SES errors
+           if (error instanceof Error) {
+             if (error.message.includes('Email address is not verified')) {
+               return NextResponse.json(
+                 {
+                   error: 'Email address not verified',
+                   message: 'The email address needs to be verified in AWS SES. In development mode, emails are simulated.',
+                   details: error.message,
+                   simulated: true
+                 },
+                 { status: 400 }
+               );
+             }
+             
+             if (error.message.includes('MessageRejected')) {
+               return NextResponse.json(
+                 {
+                   error: 'Message rejected by AWS SES',
+                   message: 'The email was rejected by AWS SES. Check your email configuration.',
+                   details: error.message,
+                   simulated: true
+                 },
+                 { status: 400 }
+               );
+             }
+           }
+           
+           return NextResponse.json(
+             {
+               error: 'Failed to send email',
+               details: error instanceof Error ? error.message : 'Unknown error'
+             },
+             { status: 500 }
+           );
+         }
 }
 
 // Handle GET requests for health check

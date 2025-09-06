@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { CalendlyWidget } from "@/components/CalendlyWidget";
+import { useSearchParams } from "next/navigation";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -32,6 +33,7 @@ export function ContactPage() {
   const [formProgress, setFormProgress] = useState(0);
   const [isFormValid, setIsFormValid] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const searchParams = useSearchParams();
 
   const {
     register,
@@ -39,6 +41,7 @@ export function ContactPage() {
     formState: { errors, isValid, touchedFields },
     reset,
     watch,
+    setValue,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -49,6 +52,24 @@ export function ContactPage() {
   });
 
   const watchedFields = watch();
+
+  // Handle URL parameters for pre-population
+  useEffect(() => {
+    const email = searchParams.get('email');
+    const source = searchParams.get('source');
+    
+    if (email) {
+      setValue('email', email);
+      // Show a subtle notification that email was pre-filled
+      toast.success("Email pre-filled from previous form", {
+        duration: 3000,
+      });
+    }
+    
+    if (source) {
+      setValue('source', source);
+    }
+  }, [searchParams, setValue]);
 
   // Calculate form progress
   useEffect(() => {
@@ -206,6 +227,23 @@ export function ContactPage() {
                     Tell us about your needs and we'll create a customized plan for your India expansion.
                   </p>
                   
+                  {/* Pre-filled email notification */}
+                  {searchParams.get('email') && (
+                    <motion.div 
+                      className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <div className="flex items-center justify-center gap-2 text-sm text-green-700">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        <span>Email pre-filled from your previous form submission</span>
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   {/* Form Progress Indicator */}
                   <div className="mt-6">
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
@@ -250,11 +288,20 @@ export function ContactPage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Work Email *
+                        {searchParams.get('email') && (
+                          <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Pre-filled
+                          </span>
+                        )}
                       </label>
                       <input
                         {...register("email")}
                         type="email"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent ${
+                          searchParams.get('email') 
+                            ? 'border-green-300 bg-green-50' 
+                            : 'border-gray-300'
+                        }`}
                         placeholder="your.email@company.com"
                       />
                       {errors.email && (

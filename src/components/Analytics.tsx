@@ -24,7 +24,7 @@ export function Analytics() {
     }
 
     // Initialize Hotjar
-    if (config.hotjarId) {
+    if (config.hotjarId && config.hotjarId !== '') {
       hotjar.initializeHotjar(config.hotjarId, config.hotjarVersion);
     }
 
@@ -231,8 +231,8 @@ export function Analytics() {
     // Track file downloads
     const handleDownload = (event: Event) => {
       const link = event.target as HTMLAnchorElement;
-      if (link.download || link.href.includes('.pdf') || link.href.includes('.doc')) {
-        const fileName = link.download || link.href.split('/').pop() || 'unknown_file';
+      if (link.download || (link.href && (link.href.includes('.pdf') || link.href.includes('.doc')))) {
+        const fileName = link.download || (link.href ? link.href.split('/').pop() : 'unknown_file') || 'unknown_file';
         const fileType = fileName.split('.').pop() || 'unknown';
         
         analytics.trackDownload(fileName, fileType);

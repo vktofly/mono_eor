@@ -26,6 +26,7 @@ export const contentfulPreviewClient = spaceId && (previewToken || accessToken) 
 // Type definitions for Contentful content types
 export interface SiteSettings {
   siteName: string;
+  calendlyUrl?: string;
   logo?: {
     fields: {
       file: {
@@ -276,6 +277,15 @@ export class ContentfulService {
     if (!this.checkClient()) return null;
 
     try {
+      // Check if the content type exists first
+      const contentTypes = await this.client!.getContentTypes();
+      const siteSettingsType = contentTypes.items.find(ct => ct.sys.id === 'siteSettings');
+      
+      if (!siteSettingsType) {
+        console.warn('Contentful content type "siteSettings" not found. Using default settings.');
+        return null;
+      }
+
       const response = await this.client!.getEntries({
         content_type: 'siteSettings',
         limit: 1,

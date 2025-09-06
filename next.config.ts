@@ -14,9 +14,10 @@ const nextConfig: NextConfig = {
     ],
     // Enable modern bundling
     esmExternals: true,
-    // Optimize server components
-    serverComponentsExternalPackages: ['@contentful/rich-text-react-renderer'],
   },
+  
+  // Server external packages (moved from experimental)
+  serverExternalPackages: ['@contentful/rich-text-react-renderer'],
   
   // Image optimization
   images: {
@@ -152,8 +153,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Enable SWC minification
-  swcMinify: true,
+  // SWC minification is enabled by default in Next.js 13+
 };
 
 export default nextConfig;

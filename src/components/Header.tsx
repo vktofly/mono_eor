@@ -78,8 +78,8 @@ export function Header({ settings }: HeaderProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {settings.navLinks.map((link) => (
-              <div key={link.href} className="relative dropdown-container">
+            {settings.navLinks.map((link, index) => (
+              <div key={`desktop-${index}-${link.href}`} className="relative dropdown-container">
                 {link.submenu ? (
                   <div className="relative">
                     <button
@@ -100,9 +100,9 @@ export function Header({ settings }: HeaderProps) {
                           exit={{ opacity: 0, y: -10 }}
                           className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
                         >
-                          {link.submenu.map((subLink) => (
+                          {link.submenu.map((subLink, subIndex) => (
                             <Link
-                              key={subLink.href}
+                              key={`desktop-sub-${index}-${subIndex}-${subLink.href}`}
                               href={subLink.href}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600 transition-colors"
                             >
@@ -160,8 +160,8 @@ export function Header({ settings }: HeaderProps) {
               aria-label="Mobile navigation menu"
             >
               <div className="py-4 space-y-2">
-                {settings.navLinks.map((link) => (
-                  <div key={link.href}>
+                {settings.navLinks.map((link, index) => (
+                  <div key={`mobile-${index}-${link.href}`}>
                     {link.submenu ? (
                       <div>
                         <button
@@ -183,9 +183,9 @@ export function Header({ settings }: HeaderProps) {
                               exit={{ opacity: 0, height: 0 }}
                               className="ml-4 space-y-1"
                             >
-                              {link.submenu.map((subLink) => (
+                              {link.submenu.map((subLink, subIndex) => (
                                 <Link
-                                  key={subLink.href}
+                                  key={`mobile-sub-${index}-${subIndex}-${subLink.href}`}
                                   href={subLink.href}
                                   className="block px-4 py-2 text-sm text-gray-600 hover:text-brand-600 hover:bg-gray-50 rounded-lg transition-colors"
                                 >

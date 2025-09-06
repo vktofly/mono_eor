@@ -41,16 +41,20 @@ export default function TestEmailPage() {
 
         <div className="mt-6 p-6 bg-yellow-50 rounded-lg">
           <h3 className="text-lg font-semibold text-yellow-900 mb-3">
-            ⚙️ Configuration Required
+            ⚙️ AWS SES Email Verification Required
           </h3>
           <p className="text-yellow-800 mb-3">
-            To enable real email sending, configure the following environment variables:
+            <strong>Current Status:</strong> Email addresses need to be verified in AWS SES before they can send real emails.
           </p>
+          <div className="bg-yellow-100 p-3 rounded text-sm text-yellow-900 mb-3">
+            <div><strong>Development Mode:</strong> Emails are automatically simulated for unverified addresses</div>
+            <div><strong>Production Mode:</strong> All email addresses must be verified in AWS SES</div>
+          </div>
           <div className="bg-yellow-100 p-3 rounded text-sm font-mono text-yellow-900">
             <div>AWS_ACCESS_KEY_ID=your_aws_access_key</div>
             <div>AWS_SECRET_ACCESS_KEY=your_aws_secret_key</div>
             <div>AWS_REGION=us-east-1</div>
-            <div>SES_FROM_EMAIL=noreply@yourdomain.com</div>
+            <div>SES_FROM_EMAIL=verified@yourdomain.com</div>
             <div>SES_FROM_NAME=MonoHR</div>
           </div>
         </div>
@@ -60,11 +64,13 @@ export default function TestEmailPage() {
             🚀 Production Setup
           </h3>
           <ol className="text-green-800 space-y-2 list-decimal list-inside">
-            <li>Set up AWS SES account and verify your domain</li>
-            <li>Create IAM user with SES permissions</li>
-            <li>Add environment variables to your deployment platform</li>
-            <li>Test email delivery in production environment</li>
-            <li>Monitor email delivery rates and bounce handling</li>
+            <li><strong>Verify Email Addresses in AWS SES:</strong> Go to AWS SES Console → Verified identities → Add email addresses</li>
+            <li><strong>Verify Domain (Recommended):</strong> Add DNS records to verify your entire domain</li>
+            <li><strong>Request Production Access:</strong> Move out of SES sandbox mode for production</li>
+            <li><strong>Create IAM User:</strong> With SES permissions for your application</li>
+            <li><strong>Update Environment Variables:</strong> Use verified email addresses</li>
+            <li><strong>Test Email Delivery:</strong> Verify all email types work correctly</li>
+            <li><strong>Monitor Delivery:</strong> Set up bounce and complaint handling</li>
           </ol>
         </div>
       </div>

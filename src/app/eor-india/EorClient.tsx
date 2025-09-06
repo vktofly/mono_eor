@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sankey, ResponsiveContainer } from "recharts";
 import { LazyWrapper } from "@/components/optimized/LazyWrapper";
-import { ABHeroSection } from "@/components/ab-testing/ABHeroSection";
+// Removed A/B testing - using control hero section directly
 
 // Global type declaration for gtag
 declare global {
@@ -16,54 +16,82 @@ declare global {
   }
 }
 
-// Animated text component
+// Animated text component with horizontal character scaling
 function AnimatedText() {
   const [currentText, setCurrentText] = useState(0);
-  const texts = ["Scale", "Build", "Scale"];
+  const texts = ["Scale", "Build"];
   
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentText((prev) => (prev + 1) % texts.length);
-    }, 3000); // Change every 3 seconds
-    
-    return () => clearInterval(interval);
-  }, [texts.length]);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentText((prev) => (prev + 1) % texts.length);
+      }, 6000); // Change every 6 seconds - gives users time to read the full headline
+      
+      return () => clearInterval(interval);
+    }, [texts.length]);
+
+  const currentWord = texts[currentText];
 
   return (
     <div className="relative inline-block">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={currentText}
-          initial={{ 
-            opacity: 0, 
-            y: 20, 
-            scale: 0.8,
-            rotateX: -90
-          }}
-          animate={{ 
-            opacity: 1, 
-            y: 0, 
-            scale: 1,
-            rotateX: 0
-          }}
-          exit={{ 
-            opacity: 0, 
-            y: -20, 
-            scale: 0.8,
-            rotateX: 90
-          }}
-          transition={{ 
-            duration: 0.6,
-            ease: [0.4, 0, 0.2, 1]
-          }}
-          className="inline-block bg-gradient-to-r from-cta-400 to-cta-500 bg-clip-text text-transparent font-bold"
-          style={{
-            textShadow: "0 0 30px rgba(59, 130, 246, 0.3)"
-          }}
-        >
-          {texts[currentText]}
-        </motion.span>
-      </AnimatePresence>
+      <div className="flex items-center justify-center min-w-[4em]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentText}
+            className="flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {currentWord.split('').map((char, index) => (
+              <motion.span
+                key={`${currentText}-${index}`}
+                initial={{ 
+                  scaleX: 0,
+                  opacity: 0,
+                  scaleY: 0.8
+                }}
+                animate={{ 
+                  scaleX: 1,
+                  opacity: 1,
+                  scaleY: 1
+                }}
+                exit={{ 
+                  scaleX: 0,
+                  opacity: 0,
+                  scaleY: 0.8
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  delay: index * 0.08,
+                  ease: [0.25, 0.46, 0.45, 0.94], // Custom cubic-bezier for anticipation
+                  scaleX: {
+                    duration: 0.4,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  },
+                  scaleY: {
+                    duration: 0.3,
+                    delay: 0.1,
+                    ease: [0.34, 1.56, 0.64, 1] // Bounce effect
+                  }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  textShadow: "0 0 40px rgba(59, 130, 246, 0.6)",
+                  transition: { duration: 0.2 }
+                }}
+                className="inline-block bg-gradient-to-r from-cta-400 to-cta-500 bg-clip-text text-transparent font-bold cursor-pointer"
+                style={{
+                  textShadow: "0 0 30px rgba(59, 130, 246, 0.3)",
+                  transformOrigin: "left center"
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -294,6 +322,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
     country: z.string().optional(),
     interest: z.enum(["EOR", "Payroll", "Contractors"]),
     message: z.string().optional(),
+    source: z.string().optional(),
   });
   type FormValues = z.infer<typeof schema>;
   const { register, handleSubmit, reset, formState } = useForm<FormValues>({ 
@@ -321,8 +350,8 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
       toast.success("Thanks! We'll reach out shortly.");
       trackEvent('hero_form_success');
       reset();
-      // Navigate to contact page after successful submission
-      window.location.href = '/contact';
+      // Navigate to contact page with pre-populated email
+      window.location.href = `/contact?email=${encodeURIComponent(values.email)}&source=hero_form`;
     } catch {
       toast.error("Something went wrong. Please try again.");
       trackEvent('hero_form_error');
@@ -357,8 +386,161 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
         transition={{ duration: 0.1 }}
       />
       
-      {/* A/B Testing Hero Section */}
-      <ABHeroSection />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-brand-500 to-brand-600 text-white py-20 lg:py-32">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            {/* Hero Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
+            >
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Scale Your Team in India</span>
+            </motion.div>
+
+            {/* Dynamic Headline with Animation */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
+            >
+              <AnimatedText /> your team in India without the complexity
+            </motion.h1>
+
+            {/* Subheadline */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed font-medium"
+            >
+              Hire top Indian talent in 48 hours with our EOR services. 40% cost savings, 100% compliance, India-first expertise.
+            </motion.p>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8"
+            >
+              <div className="flex flex-col items-center text-center p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-green-400 text-xl font-bold">48</span>
+          </div>
+                <h3 className="text-white font-semibold mb-1">Hour Setup</h3>
+                <p className="text-white/70 text-sm">Start hiring immediately</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-blue-400 text-xl font-bold">40%</span>
+                </div>
+                <h3 className="text-white font-semibold mb-1">Cost Savings</h3>
+                <p className="text-white/70 text-sm">Compared to traditional hiring</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-purple-400 text-xl font-bold">100%</span>
+                </div>
+                <h3 className="text-white font-semibold mb-1">Compliance</h3>
+                <p className="text-white/70 text-sm">Full legal protection</p>
+              </div>
+            </motion.div>
+
+            {/* Email capture form */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-8 max-w-lg mx-auto"
+            >
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Hidden fields for required data */}
+                  <input type="hidden" {...register("company")} value="Not provided" />
+                  <input type="hidden" {...register("interest")} value="eor" />
+                  <input type="hidden" {...register("name")} value="Not provided" />
+                  <input type="hidden" {...register("message")} value="Interested in EOR services" />
+                  <input type="hidden" {...register("source")} value="hero_form" />
+                  
+                  <input
+                    {...register("email")}
+                    type="email"
+                    placeholder="Enter your work email"
+                    className="w-full rounded-xl border-0 bg-white/20 px-6 py-4 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/30 focus:bg-white/25 transition-all touch-target text-lg"
+                    aria-label="Work email address"
+                    aria-describedby="email-error"
+                  />
+                  {formState.errors.email && (
+                    <span id="email-error" className="text-red-300 text-sm">
+                      {formState.errors.email.message}
+                    </span>
+                  )}
+                  <motion.button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full px-8 py-4 rounded-xl font-bold text-white transition-all touch-target text-lg bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 shadow-lg hover:shadow-xl disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Get Started with EOR services"
+                  >
+                    {submitting ? (
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        Getting Started...
+                      </div>
+                    ) : (
+                      "Get Started"
+                    )}
+                  </motion.button>
+                </form>
+                
+                <p className="text-white/70 text-sm text-center mt-4">
+                  Join 500+ companies already using our EOR services
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Additional Trust Signals */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="mt-12 flex flex-wrap justify-center items-center gap-8 opacity-90"
+            >
+              <div className="text-center">
+                <div className="text-3xl font-bold">48h</div>
+                <div className="text-sm text-white/80">Setup Time</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">500+</div>
+                <div className="text-sm text-white/80">Companies</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">40%</div>
+                <div className="text-sm text-white/80">Cost Savings</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">100%</div>
+                <div className="text-sm text-white/80">Compliance</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Review Platform Ratings - COMMENTED OUT */}
       {/* 
@@ -484,7 +666,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             
             <h2 className="text-4xl font-bold mb-4">Everything You Need to Scale in India</h2>
             <p className="text-xl text-blue-100 max-w-4xl mx-auto mb-8">
-              From local expertise to employee experience, we provide the complete toolkit that traditional EORs miss and DIY setups can't deliver.
+              From local expertise to employee experience, we provide the complete toolkit that traditional EORs miss and DIY setups can&apos;t deliver.
             </p>
             
             {/* Key Metrics */}
@@ -666,7 +848,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 ))}
               </div>
               <blockquote className="text-lg text-blue-100 mb-4 italic">
-                "The employee experience here is incredible. I feel valued, supported, and excited about my career growth. It's the best workplace I've ever been part of."
+                &ldquo;The employee experience here is incredible. I feel valued, supported, and excited about my career growth. It&apos;s the best workplace I&apos;ve ever been part of.&rdquo;
               </blockquote>
               <div className="flex items-center justify-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -1045,7 +1227,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </motion.span>
               Tax-Optimized Salary Structure
             </div>
-            <h2 className="text-4xl font-bold text-text-primary mb-6">Maximize Your Team's Take-Home Pay</h2>
+            <h2 className="text-4xl font-bold text-text-primary mb-6">Maximize Your Team&apos;s Take-Home Pay</h2>
             <p className="text-xl text-text-secondary max-w-4xl mx-auto leading-relaxed">
               Our EOR platform restructures salaries to maximize take-home pay while ensuring full compliance. 
               See how we turn ₹1,00,000 into ₹82,800 take-home pay with our interactive salary optimizer.
@@ -1852,7 +2034,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
                   >
-                    "{testimonials[currentTestimonial].quote}"
+                    &ldquo;{testimonials[currentTestimonial].quote}&rdquo;
                   </motion.p>
                   
                   <motion.div

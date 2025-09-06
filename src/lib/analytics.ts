@@ -2,7 +2,7 @@
 
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
+    gtag: (...args: unknown[]) => void;
     dataLayer: any[];
   }
 }
@@ -378,9 +378,13 @@ export enum AnalyticsEvents {
   PAGE_VIEW = 'page_view',
   BUTTON_CLICK = 'button_click',
   FORM_SUBMIT = 'form_submit',
+  FORM_SUBMITTED = 'form_submitted',
+  FORM_ERROR = 'form_error',
   CONTACT_FORM_SUBMIT = 'contact_form_submit',
   QUOTE_REQUEST = 'quote_request',
+  QUOTE_REQUESTED = 'quote_requested',
   DEMO_REQUEST = 'demo_request',
+  DEMO_BOOKED = 'demo_booked',
   NEWSLETTER_SIGNUP = 'newsletter_signup',
   RESOURCE_DOWNLOAD = 'resource_download',
   PRICING_INTERACTION = 'pricing_interaction',
@@ -390,6 +394,8 @@ export enum AnalyticsEvents {
   VIDEO_INTERACTION = 'video_interaction',
   SEARCH = 'search',
   EXTERNAL_LINK_CLICK = 'external_link_click',
+  CTA_CLICKED = 'cta_clicked',
+  DOWNLOAD_CLICKED = 'download_clicked',
   ERROR = 'error',
   CONVERSION = 'conversion',
   LEAD_GENERATION = 'lead_generation',
