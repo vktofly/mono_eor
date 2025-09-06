@@ -15,9 +15,10 @@ const contactFormSchema = z.object({
   company: z.string().min(2, "Company name is required"),
   phone: z.string().optional(),
   country: z.string().optional(),
-  interest: z.enum(["eor", "contractors", "pricing", "general"], {
-    required_error: "Please select your area of interest",
-  }),
+  interest: z.enum(["eor", "contractors", "pricing", "general"]).refine(
+    (val) => val !== undefined,
+    { message: "Please select your area of interest" }
+  ),
   employees: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
   source: z.string().default("contact_page"),
@@ -42,6 +43,7 @@ export function ContactPage() {
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       source: "contact_page",
+      interest: undefined,
     },
     mode: "onChange",
   });
@@ -221,7 +223,7 @@ export function ContactPage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
