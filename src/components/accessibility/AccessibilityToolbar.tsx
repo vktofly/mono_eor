@@ -1,13 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, Type, Contrast, Volume2, VolumeX } from "lucide-react";
+import { Settings, Type, Contrast, Volume2, VolumeX, RotateCcw } from "lucide-react";
 import { useAccessibility } from "./AccessibilityProvider";
 
 export function AccessibilityToolbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { fontSize, setFontSize, highContrast, toggleHighContrast, reducedMotion } = useAccessibility();
+
+  // Keyboard shortcut to toggle accessibility toolbar
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl+Shift+A to toggle accessibility toolbar
+      if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+        event.preventDefault();
+        setIsOpen(!isOpen);
+      }
+      // Escape to close
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  // Reset all accessibility settings
+  const resetAccessibilitySettings = () => {
+    localStorage.removeItem("monohr_high_contrast");
+    localStorage.removeItem("monohr_font_size");
+    window.location.reload(); // Reload to reset all settings
+  };
 
   const fontSizes = [
     { key: "normal", label: "Normal", icon: "A" },
@@ -17,6 +42,25 @@ export function AccessibilityToolbar() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
+      {/* Reset Button - Always visible in high contrast mode */}
+      {highContrast && (
+        <motion.button
+          onClick={resetAccessibilitySettings}
+          className="mb-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-4 focus:ring-red-200 border-2 border-white"
+          style={{
+            backgroundColor: '#FF0000',
+            color: '#FFFFFF',
+            border: '3px solid #FFFFFF',
+            boxShadow: '0 0 0 3px #FF0000',
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label="Reset accessibility settings"
+          title="Reset accessibility settings (Ctrl+Shift+A to open settings)"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </motion.button>
+      )}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -81,6 +125,13 @@ export function AccessibilityToolbar() {
                 <p>Reduced motion is enabled based on your system preferences.</p>
               </div>
             )}
+
+            {/* Keyboard Shortcuts Info */}
+            <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded-md">
+              <p><strong>Keyboard Shortcuts:</strong></p>
+              <p>• Ctrl+Shift+A: Toggle this panel</p>
+              <p>• Escape: Close this panel</p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -88,11 +139,18 @@ export function AccessibilityToolbar() {
       {/* Toggle Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-brand-500 hover:bg-brand-600 text-white p-3 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-4 focus:ring-brand-200"
+        className="bg-brand-500 hover:bg-brand-600 text-white p-3 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-4 focus:ring-brand-200 border-2 border-white high-contrast:border-black high-contrast:bg-yellow-500 high-contrast:text-black"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label={isOpen ? "Close accessibility options" : "Open accessibility options"}
         aria-expanded={isOpen}
+        style={{
+          // Ensure visibility in high contrast mode
+          backgroundColor: highContrast ? '#FFD700' : undefined,
+          color: highContrast ? '#000000' : undefined,
+          border: highContrast ? '3px solid #000000' : undefined,
+          boxShadow: highContrast ? '0 0 0 3px #FFD700' : undefined,
+        }}
       >
         <Settings className="w-5 h-5" />
       </motion.button>
