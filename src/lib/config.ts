@@ -92,7 +92,7 @@ export function getCachedSiteSettings(): SiteSettings | null {
 
 // Calendly URL configuration
 export function getCalendlyUrl(): string {
-  return process.env.CALENDLY_URL || 'https://calendly.com/monohr/eor-consultation';
+  return process.env.NEXT_PUBLIC_CALENDLY_EMBED_URL || 'https://calendly.com/monohr/eor-consultation';
 }
 
 // Email configuration
@@ -121,5 +121,36 @@ export function getHubSpotConfig() {
   return {
     accessToken: process.env.HUBSPOT_ACCESS_TOKEN || '',
     portalId: process.env.HUBSPOT_PORTAL_ID || '',
+  };
+}
+
+// Site configuration
+export function getSiteConfig() {
+  return {
+    siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'MonoHR',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://monohr.vercel.app',
+    nodeEnv: process.env.NODE_ENV || 'development',
+  };
+}
+
+// Analytics configuration
+export function getAnalyticsConfig() {
+  return {
+    ga4MeasurementId: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || '',
+    gtmId: process.env.NEXT_PUBLIC_GTM_ID || '',
+    hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID || '',
+    hotjarVersion: parseInt(process.env.NEXT_PUBLIC_HOTJAR_VERSION || '6'),
+  };
+}
+
+// Contentful configuration
+export function getContentfulConfig() {
+  return {
+    spaceId: process.env.CONTENTFUL_SPACE_ID || '',
+    cdaToken: process.env.CONTENTFUL_CDA_TOKEN || '',
+    previewToken: process.env.CONTENTFUL_PREVIEW_TOKEN || '',
+    environment: process.env.CONTENTFUL_ENV || 'master',
+    previewSecret: process.env.CONTENTFUL_PREVIEW_SECRET || '',
+    webhookSecret: process.env.CONTENTFUL_WEBHOOK_SECRET || '',
   };
 }

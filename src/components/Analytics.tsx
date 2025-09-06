@@ -5,27 +5,27 @@ import { usePathname } from 'next/navigation';
 import { analytics } from '@/lib/analytics';
 import { hotjar } from '@/lib/hotjar';
 import { calendly } from '@/lib/calendly';
+import { getAnalyticsConfig } from '@/lib/config';
 
 export function Analytics() {
   const pathname = usePathname();
 
   useEffect(() => {
+    const config = getAnalyticsConfig();
+
     // Initialize Google Analytics 4
-    if (process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID) {
-      analytics.initializeGA4(process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID);
+    if (config.ga4MeasurementId) {
+      analytics.initializeGA4(config.ga4MeasurementId);
     }
 
     // Initialize Google Tag Manager
-    if (process.env.NEXT_PUBLIC_GTM_ID) {
-      analytics.initializeGTM(process.env.NEXT_PUBLIC_GTM_ID);
+    if (config.gtmId) {
+      analytics.initializeGTM(config.gtmId);
     }
 
     // Initialize Hotjar
-    if (process.env.NEXT_PUBLIC_HOTJAR_ID) {
-      hotjar.initializeHotjar(
-        process.env.NEXT_PUBLIC_HOTJAR_ID,
-        parseInt(process.env.NEXT_PUBLIC_HOTJAR_VERSION || '6')
-      );
+    if (config.hotjarId) {
+      hotjar.initializeHotjar(config.hotjarId, config.hotjarVersion);
     }
 
     // Setup Calendly event handlers

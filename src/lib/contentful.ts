@@ -1,10 +1,12 @@
 import { createClient, ContentfulApi } from 'contentful';
+import { getContentfulConfig } from './config';
 
 // Contentful configuration
-const spaceId = process.env.CONTENTFUL_SPACE_ID;
-const accessToken = process.env.CONTENTFUL_CDA_TOKEN;
-const previewToken = process.env.CONTENTFUL_PREVIEW_TOKEN;
-const environment = process.env.CONTENTFUL_ENV || 'master';
+const config = getContentfulConfig();
+const spaceId = config.spaceId;
+const accessToken = config.cdaToken;
+const previewToken = config.previewToken;
+const environment = config.environment;
 
 // Create Contentful client (only if credentials are available)
 export const contentfulClient = spaceId && accessToken ? createClient({

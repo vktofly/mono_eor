@@ -233,7 +233,7 @@ class EmailService {
   // Send password reset email
   async sendPasswordResetEmail(userEmail: string, resetToken: string): Promise<{ success: boolean; error?: string }> {
     const template = this.getEmailTemplate('password-reset');
-    const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://monohr.vercel.app'}/reset-password?token=${resetToken}`;
     
     const html = template.html
       .replace('{{resetUrl}}', resetUrl)
