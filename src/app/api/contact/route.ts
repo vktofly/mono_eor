@@ -5,8 +5,14 @@ import { hubspotService } from '@/lib/hubspot';
 import { emailService } from '@/lib/email';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
-const region = process.env.AWS_REGION || "us-east-1";
-const ses = new SESClient({ region });
+// Initialize SES client with proper error handling
+let ses: SESClient | null = null;
+try {
+  const region = process.env.AWS_REGION || "us-east-1";
+  ses = new SESClient({ region });
+} catch (error) {
+  console.warn('Failed to initialize SES client:', error);
+}
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -22,14 +28,24 @@ const contactFormSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
+  
   try {
     const body = await req.json();
     
     // Validate form data
     const validatedData = contactFormSchema.parse(body);
     
+    // Log form submission attempt
+    console.log('Contact form submission received:', {
+      timestamp: new Date().toISOString(),
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+      userAgent: req.headers.get('user-agent') || 'unknown',
+      formType: validatedData.formType,
+    });
+    
     // Track form submission
-    trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
+    trackEvent(AnalyticsEvents.FORM_SUBMIT, {
       form_type: validatedData.formType,
       form_source: req.headers.get('referer') || 'unknown',
       user_company: validatedData.company,
@@ -38,7 +54,20 @@ export async function POST(req: Request) {
     
     // Send to HubSpot CRM
     try {
-      await hubspotService.logFormSubmission(validatedData, validatedData.formType);
+      await hubspotService.createContact({
+        email: validatedData.email,
+        firstname: validatedData.name?.split(' ')[0],
+        lastname: validatedData.name?.split(' ').slice(1).join(' '),
+        company: validatedData.company,
+        phone: validatedData.phone,
+        lead_source: 'website',
+        notes: validatedData.message,
+        custom_fields: {
+          interest: validatedData.interest,
+          country: validatedData.country,
+          form_type: validatedData.formType,
+        },
+      });
     } catch (hubspotError) {
       console.error('HubSpot integration error:', hubspotError);
       // Continue processing even if HubSpot fails
@@ -47,63 +76,97 @@ export async function POST(req: Request) {
     // Send email notifications using our enhanced email service
     try {
       // Send notification to admin
-      await emailService.sendContactFormNotification(validatedData);
+      await emailService.sendContactFormEmail({
+        name: validatedData.name,
+        email: validatedData.email,
+        company: validatedData.company,
+        phone: validatedData.phone,
+        message: validatedData.message,
+        subject: validatedData.interest || 'General Inquiry',
+      });
       
       // Send confirmation to user
-      await emailService.sendAutoReply(validatedData.email, 'contact');
+      await emailService.sendWelcomeEmail(validatedData.email, validatedData.name);
     } catch (emailError) {
       console.error('Email service error:', emailError);
       
-      // Fallback to original SES method
-      const toAddress = process.env.SES_SALES_TO as string;
-      const fromAddress = process.env.SES_FROM_EMAIL as string;
+      // Fallback to original SES method with proper validation
+      try {
+        const toAddress = process.env.SES_SALES_TO;
+        const fromAddress = process.env.SES_FROM_EMAIL;
 
-      const params = new SendEmailCommand({
-        Source: fromAddress,
-        Destination: { ToAddresses: [toAddress] },
-        Message: {
-          Subject: { Data: `New lead: ${validatedData.interest || "General"} - ${validatedData.company || "Unknown"}` },
-          Body: {
-            Html: {
-              Data: `
-                <h2>New Lead - MonoHR</h2>
-                <p><b>Name:</b> ${validatedData.name || "-"}</p>
-                <p><b>Email:</b> ${validatedData.email || "-"}</p>
-                <p><b>Company:</b> ${validatedData.company || "-"}</p>
-                <p><b>Country:</b> ${validatedData.country || "-"}</p>
-                <p><b>Interest:</b> ${validatedData.interest || "-"}</p>
-                <p><b>Message:</b> ${validatedData.message || "-"}</p>
-              `,
+        if (!toAddress || !fromAddress) {
+          console.error('Missing required email environment variables for fallback');
+          throw new Error('Email configuration incomplete');
+        }
+
+        if (!ses) {
+          console.error('SES client not initialized');
+          throw new Error('Email service unavailable');
+        }
+
+        const params = new SendEmailCommand({
+          Source: fromAddress,
+          Destination: { ToAddresses: [toAddress] },
+          Message: {
+            Subject: { Data: `New lead: ${validatedData.interest || "General"} - ${validatedData.company || "Unknown"}` },
+            Body: {
+              Html: {
+                Data: `
+                  <h2>New Lead - MonoHR</h2>
+                  <p><b>Name:</b> ${validatedData.name || "-"}</p>
+                  <p><b>Email:</b> ${validatedData.email || "-"}</p>
+                  <p><b>Company:</b> ${validatedData.company || "-"}</p>
+                  <p><b>Country:</b> ${validatedData.country || "-"}</p>
+                  <p><b>Interest:</b> ${validatedData.interest || "-"}</p>
+                  <p><b>Message:</b> ${validatedData.message || "-"}</p>
+                `,
+              },
+              Text: { Data: `Lead: ${validatedData.name} <${validatedData.email}> - ${validatedData.company} - ${validatedData.interest}` },
             },
-            Text: { Data: `Lead: ${validatedData.name} <${validatedData.email}> - ${validatedData.company} - ${validatedData.interest}` },
           },
-        },
-        ReplyToAddresses: validatedData.email ? [validatedData.email] : undefined,
-      });
+          ReplyToAddresses: validatedData.email ? [validatedData.email] : undefined,
+        });
 
-      await ses.send(params);
+        await ses.send(params);
+        console.log('Fallback email sent successfully via SES');
+      } catch (fallbackError) {
+        console.error('Fallback email sending failed:', fallbackError);
+        // Continue processing even if all email methods fail
+      }
     }
     
     // Log successful submission
-    console.log('Contact form submission processed:', {
+    const processingTime = Date.now() - startTime;
+    console.log('Contact form submission processed successfully:', {
       name: validatedData.name,
       email: validatedData.email,
       company: validatedData.company,
       formType: validatedData.formType,
+      processingTimeMs: processingTime,
+      timestamp: new Date().toISOString(),
     });
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Thank you for your message. We\'ll get back to you within 24 hours!' 
+      message: 'Thank you for your message. We\'ll get back to you within 24 hours!',
+      processingTime: processingTime,
     });
     
   } catch (error) {
-    console.error('Contact form error:', error);
+    const processingTime = Date.now() - startTime;
+    console.error('Contact form error:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      processingTimeMs: processingTime,
+      timestamp: new Date().toISOString(),
+    });
     
     // Track form error
-    trackEvent(AnalyticsEvents.FORM_ERROR, {
-      error_type: 'validation_error',
+    trackEvent(AnalyticsEvents.ERROR, {
+      error_type: error instanceof z.ZodError ? 'validation_error' : 'server_error',
       error_message: error instanceof Error ? error.message : 'Unknown error',
+      processing_time: processingTime,
     });
     
     if (error instanceof z.ZodError) {
@@ -111,7 +174,7 @@ export async function POST(req: Request) {
         { 
           success: false, 
           message: 'Please check your form data and try again.',
-          errors: error.errors 
+          errors: error.issues 
         },
         { status: 400 }
       );

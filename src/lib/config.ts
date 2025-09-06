@@ -98,9 +98,12 @@ export function getCalendlyUrl(): string {
 // Email configuration
 export function getEmailConfig() {
   return {
-    fromEmail: process.env.FROM_EMAIL || 'noreply@monohr.com',
-    toEmail: process.env.TO_EMAIL || 'contact@monohr.com',
-    replyTo: process.env.REPLY_TO_EMAIL || 'contact@monohr.com',
+    fromEmail: process.env.SES_FROM_EMAIL || 'noreply@monohr.com',
+    toEmail: process.env.SES_SALES_TO || 'contact@monohr.com',
+    replyTo: process.env.SES_FROM_EMAIL || 'contact@monohr.com',
+    fromName: process.env.SES_FROM_NAME || 'MonoHR',
+    adminEmail: process.env.SES_ADMIN_EMAIL || 'admin@monohr.com',
+    supportEmail: process.env.SES_SUPPORT_EMAIL || 'support@monohr.com',
   };
 }
 

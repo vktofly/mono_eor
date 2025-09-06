@@ -1,12 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { CalendlyWidget } from "@/components/CalendlyWidget";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -27,24 +28,43 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 export function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"form" | "calendly" | "direct">("form");
+  const [formProgress, setFormProgress] = useState(0);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, touchedFields },
     reset,
+    watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       source: "contact_page",
     },
+    mode: "onChange",
   });
+
+  const watchedFields = watch();
+
+  // Calculate form progress
+  useEffect(() => {
+    const requiredFields = ['name', 'email', 'company', 'interest', 'message'];
+    const filledFields = requiredFields.filter(field => 
+      watchedFields[field as keyof ContactFormData] && 
+      watchedFields[field as keyof ContactFormData]?.toString().trim() !== ''
+    );
+    const progress = (filledFields.length / requiredFields.length) * 100;
+    setFormProgress(progress);
+    setIsFormValid(isValid);
+  }, [watchedFields, isValid]);
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     
     // Track form submission
-    trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
+    trackEvent(AnalyticsEvents.FORM_SUBMIT, {
       form_type: "contact_page",
       form_source: "contact_page",
       user_company: data.company,
@@ -62,11 +82,18 @@ export function ContactPage() {
       if (!response.ok) throw new Error("Failed to submit form");
 
       toast.success("Thank you! We'll get back to you within 24 hours.");
-      trackEvent(AnalyticsEvents.FORM_SUCCESS, { form_type: "contact_page" });
+      trackEvent(AnalyticsEvents.CONVERSION, { 
+        form_type: "contact_page",
+        conversion_type: "form_submission"
+      });
+      setShowSuccess(true);
       reset();
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
-      trackEvent(AnalyticsEvents.FORM_ERROR, { 
+      trackEvent(AnalyticsEvents.ERROR, { 
         form_type: "contact_page",
         error: "submission_failed" 
       });
@@ -77,9 +104,9 @@ export function ContactPage() {
 
   const handleTabClick = (tab: "form" | "calendly" | "direct") => {
     setActiveTab(tab);
-    trackEvent(AnalyticsEvents.CTA_CLICKED, {
-      cta_type: `contact_tab_${tab}`,
-      cta_location: "contact_page",
+    trackEvent(AnalyticsEvents.BUTTON_CLICK, {
+      button_name: `contact_tab_${tab}`,
+      location: "contact_page",
     });
   };
 
@@ -176,6 +203,22 @@ export function ContactPage() {
                   <p className="text-gray-600">
                     Tell us about your needs and we'll create a customized plan for your India expansion.
                   </p>
+                  
+                  {/* Form Progress Indicator */}
+                  <div className="mt-6">
+                    <div className="flex justify-between text-sm text-gray-500 mb-2">
+                      <span>Form Progress</span>
+                      <span>{Math.round(formProgress)}% Complete</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <motion.div
+                        className="bg-gradient-to-r from-brand-500 to-brand-600 h-2 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${formProgress}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -186,11 +229,19 @@ export function ContactPage() {
                       </label>
                       <input
                         {...register("name")}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                        className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 ${
+                          errors.name 
+                            ? "border-red-300 focus:ring-2 focus:ring-red-500 focus:border-transparent" 
+                            : "border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                        }`}
                         placeholder="Enter your full name"
+                        aria-invalid={errors.name ? "true" : "false"}
+                        aria-describedby={errors.name ? "name-error" : undefined}
                       />
                       {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                        <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+                          {errors.name.message}
+                        </p>
                       )}
                     </div>
 
@@ -304,13 +355,65 @@ export function ContactPage() {
 
                   <motion.button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white font-semibold py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    disabled={isSubmitting || !isFormValid}
+                    className={`w-full font-semibold py-4 px-6 rounded-lg shadow-lg transition-all duration-200 ${
+                      isFormValid && !isSubmitting
+                        ? "bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 text-white hover:shadow-xl"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
+                    whileHover={isFormValid && !isSubmitting ? { scale: 1.02 } : {}}
+                    whileTap={isFormValid && !isSubmitting ? { scale: 0.98 } : {}}
                   >
-                    {isSubmitting ? "Sending..." : "Get My Free Plan - Save $5,000"}
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Sending...
+                      </div>
+                    ) : isFormValid ? (
+                      "Get My Free Plan - Save $5,000"
+                    ) : (
+                      "Complete the form to continue"
+                    )}
                   </motion.button>
+                  
+                  {/* Success Message */}
+                  <AnimatePresence>
+                    {showSuccess && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="bg-green-50 border border-green-200 rounded-lg p-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-green-900">Form Submitted Successfully!</h4>
+                            <p className="text-sm text-green-700">We'll get back to you within 24 hours with your customized India expansion plan.</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  {/* Privacy Notice */}
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 text-blue-600 mt-0.5">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="text-sm text-blue-800">
+                        <p className="font-medium mb-1">Your privacy is protected</p>
+                        <p>We'll only use your information to create your personalized India expansion plan. No spam, no sharing with third parties. Read our <a href="/privacy" className="underline hover:no-underline">Privacy Policy</a>.</p>
+                      </div>
+                    </div>
+                  </div>
                 </form>
               </motion.div>
             )}
@@ -361,10 +464,10 @@ export function ContactPage() {
                   </ul>
                 </div>
 
-                <iframe
-                  title="Calendly Booking"
-                  src={process.env.NEXT_PUBLIC_CALENDLY_EMBED_URL || "about:blank"}
-                  className="w-full h-[600px] border border-gray-200 rounded-lg"
+                <CalendlyWidget
+                  eventType="consultation"
+                  inline={true}
+                  className="w-full"
                 />
               </motion.div>
             )}
@@ -448,6 +551,76 @@ export function ContactPage() {
                 </div>
               </motion.div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Signals Section */}
+      <section className="py-16 bg-white">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Trusted by 500+ Companies Worldwide
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Join leading companies who have successfully expanded their teams in India with MonoHR
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">100% Compliance</h3>
+              <p className="text-sm text-gray-600">Full legal compliance with Indian labor laws and regulations</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">48-Hour Setup</h3>
+              <p className="text-sm text-gray-600">Fastest EOR setup in India with guaranteed timeline</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">40% Cost Savings</h3>
+              <p className="text-sm text-gray-600">Average cost reduction compared to traditional hiring</p>
+            </div>
+          </div>
+
+          {/* Security Badges */}
+          <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              <span>SSL Encrypted</span>
+            </div>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>GDPR Compliant</span>
+            </div>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>SOC 2 Certified</span>
+            </div>
           </div>
         </div>
       </section>

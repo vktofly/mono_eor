@@ -7,6 +7,9 @@ import { Toaster } from "@/components/Toaster";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Analytics } from "@/components/Analytics";
 import { StructuredData } from "@/components/StructuredData";
+import { CoreWebVitals } from "@/components/seo/CoreWebVitals";
+import { CriticalCSS } from "@/components/optimized/CriticalCSS";
+import { ResourcePreloader } from "@/components/optimized/CriticalCSS";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { PerformanceMonitor } from "@/components/optimized/PerformanceMonitor";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
@@ -112,24 +115,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <StructuredData />
-        {/* Preload critical resources */}
-        <link rel="preload" href="/fonts/geist-sans.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="//www.google-analytics.com" />
-        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-        {/* PWA Manifest */}
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2155CD" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="MonoHR" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
-      </head>
+             <head>
+               <StructuredData />
+               <CriticalCSS />
+               <ResourcePreloader />
+               {/* Preload critical resources */}
+               <link rel="preload" href="/fonts/geist-sans.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+               <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+               {/* DNS prefetch for external resources */}
+               <link rel="dns-prefetch" href="//www.google-analytics.com" />
+               <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+               <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+               <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+               {/* PWA Manifest */}
+               <link rel="manifest" href="/manifest.json" />
+               <meta name="theme-color" content="#2155CD" />
+               <meta name="apple-mobile-web-app-capable" content="yes" />
+               <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+               <meta name="apple-mobile-web-app-title" content="MonoHR" />
+               <link rel="apple-touch-icon" href="/icon-192x192.png" />
+             </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -147,9 +152,10 @@ export default function RootLayout({
           <Toaster />
           <CookieConsent />
           <Analytics />
-          <PerformanceMonitor />
-          <AccessibilityToolbar />
-          <ExitIntentPopup />
+                 <PerformanceMonitor />
+                 <CoreWebVitals />
+                 <AccessibilityToolbar />
+                 <ExitIntentPopup />
         </AccessibilityProvider>
       </body>
     </html>

@@ -2,249 +2,453 @@ import { getEmailConfig, getAWSConfig } from './config';
 
 interface EmailData {
   to: string | string[];
+  from?: string;
+  subject: string;
+  text?: string;
+  html?: string;
+  replyTo?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
+  attachments?: Array<{
+    filename: string;
+    content: string | Buffer;
+    contentType?: string;
+  }>;
+}
+
+interface EmailTemplate {
+  name: string;
   subject: string;
   html: string;
-  text?: string;
-  from?: string;
-  replyTo?: string;
+  text: string;
 }
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  company?: string;
-  phone?: string;
-  message: string;
-  interest?: string;
-  source?: string;
-}
-
-export class EmailService {
-  private fromEmail: string;
-  private fromName: string;
-  private adminEmail: string;
-  private supportEmail: string;
-  private awsConfig: Record<string, string | undefined>;
+class EmailService {
+  private config: ReturnType<typeof getEmailConfig>;
+  private awsConfig: ReturnType<typeof getAWSConfig>;
 
   constructor() {
-    const emailConfig = getEmailConfig();
-    this.fromEmail = emailConfig.fromEmail;
-    this.fromName = emailConfig.fromName;
-    this.adminEmail = emailConfig.adminEmail;
-    this.supportEmail = emailConfig.supportEmail;
+    this.config = getEmailConfig();
     this.awsConfig = getAWSConfig();
   }
 
-  private async sendEmail(emailData: EmailData) {
-    if (!this.awsConfig.accessKeyId || !this.awsConfig.secretAccessKey) {
-      console.warn('AWS SES not configured, email not sent:', emailData);
-      return { success: false, message: 'Email service not configured' };
-    }
-
+  // Send email using AWS SES
+  async sendEmail(emailData: EmailData): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      // In a real implementation, you would use AWS SDK
-      // For now, we'll simulate the email sending
-      console.log('Email would be sent:', {
-        from: emailData.from || `${this.fromName} <${this.fromEmail}>`,
-        to: emailData.to,
-        subject: emailData.subject,
-        html: emailData.html,
+      // For now, we'll use a simple fetch to a custom API endpoint
+      // In production, you'd use AWS SDK
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: Array.isArray(emailData.to) ? emailData.to : [emailData.to],
+          from: emailData.from || this.config.fromEmail,
+          subject: emailData.subject,
+          text: emailData.text,
+          html: emailData.html,
+          replyTo: emailData.replyTo || this.config.replyTo,
+          cc: emailData.cc ? (Array.isArray(emailData.cc) ? emailData.cc : [emailData.cc]) : undefined,
+          bcc: emailData.bcc ? (Array.isArray(emailData.bcc) ? emailData.bcc : [emailData.bcc]) : undefined,
+        }),
       });
 
-      return { success: true, message: 'Email sent successfully' };
+      if (!response.ok) {
+        throw new Error(`Email sending failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        success: true,
+        messageId: result.messageId,
+      };
     } catch (error) {
-      console.error('Email sending failed:', error);
-      return { success: false, message: 'Failed to send email' };
+      console.error('Error sending email:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
-  async sendContactFormNotification(formData: ContactFormData) {
-    const subject = `New Contact Form Submission - ${formData.company || 'Unknown Company'}`;
+  // Send welcome email
+  async sendWelcomeEmail(userEmail: string, userName?: string): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('welcome');
     
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2155CD;">New Contact Form Submission</h2>
-        
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #333;">Contact Details</h3>
-          <p><strong>Name:</strong> ${formData.name}</p>
-          <p><strong>Email:</strong> ${formData.email}</p>
-          ${formData.company ? `<p><strong>Company:</strong> ${formData.company}</p>` : ''}
-          ${formData.phone ? `<p><strong>Phone:</strong> ${formData.phone}</p>` : ''}
-          ${formData.interest ? `<p><strong>Interest:</strong> ${formData.interest}</p>` : ''}
-          ${formData.source ? `<p><strong>Source:</strong> ${formData.source}</p>` : ''}
-        </div>
-        
-        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #333;">Message</h3>
-          <p style="white-space: pre-wrap;">${formData.message}</p>
-        </div>
-        
-        <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
-          <p style="margin: 0; font-size: 14px; color: #666;">
-            <strong>Next Steps:</strong> Follow up within 24 hours to maintain lead quality.
-          </p>
-        </div>
-      </div>
-    `;
+    const html = template.html
+      .replace('{{userName}}', userName || 'there')
+      .replace('{{userEmail}}', userEmail);
 
-    const text = `
-New Contact Form Submission
+    const text = template.text
+      .replace('{{userName}}', userName || 'there')
+      .replace('{{userEmail}}', userEmail);
 
-Contact Details:
-Name: ${formData.name}
-Email: ${formData.email}
-${formData.company ? `Company: ${formData.company}` : ''}
-${formData.phone ? `Phone: ${formData.phone}` : ''}
-${formData.interest ? `Interest: ${formData.interest}` : ''}
-${formData.source ? `Source: ${formData.source}` : ''}
+    return await this.sendEmail({
+      to: userEmail,
+      subject: template.subject,
+      html,
+      text,
+    });
+  }
 
-Message:
-${formData.message}
+  // Send contact form email
+  async sendContactFormEmail(formData: {
+    name: string;
+    email: string;
+    company?: string;
+    phone?: string;
+    message: string;
+    subject?: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('contact-form');
+    
+    const html = template.html
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company || 'Not provided')
+      .replace('{{phone}}', formData.phone || 'Not provided')
+      .replace('{{message}}', formData.message)
+      .replace('{{subject}}', formData.subject || 'General Inquiry');
 
-Next Steps: Follow up within 24 hours to maintain lead quality.
-    `;
+    const text = template.text
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company || 'Not provided')
+      .replace('{{phone}}', formData.phone || 'Not provided')
+      .replace('{{message}}', formData.message)
+      .replace('{{subject}}', formData.subject || 'General Inquiry');
 
-    return this.sendEmail({
-      to: this.adminEmail,
-      subject,
+    return await this.sendEmail({
+      to: this.config.toEmail,
+      subject: `New Contact Form Submission from ${formData.name}`,
       html,
       text,
       replyTo: formData.email,
     });
   }
 
-  async sendQuoteRequestNotification(formData: Record<string, unknown>) {
-    const subject = `New Quote Request - ${formData.company || 'Unknown Company'}`;
+  // Send quote request email
+  async sendQuoteRequestEmail(formData: {
+    name: string;
+    email: string;
+    company: string;
+    teamSize: string;
+    services: string[];
+    timeline: string;
+    message?: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('quote-request');
     
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2155CD;">New Quote Request</h2>
-        
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #333;">Company Details</h3>
-          <p><strong>Company:</strong> ${formData.company}</p>
-          <p><strong>Contact:</strong> ${formData.name} (${formData.email})</p>
-          ${formData.phone ? `<p><strong>Phone:</strong> ${formData.phone}</p>` : ''}
-          <p><strong>Employees:</strong> ${formData.employees}</p>
-          <p><strong>Interest:</strong> ${formData.interest}</p>
-        </div>
-        
-        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #856404;">Priority: High</h3>
-          <p style="margin: 0; color: #856404;">This is a qualified lead requesting a quote. Respond within 4 hours.</p>
-        </div>
-      </div>
-    `;
+    const servicesList = formData.services.join(', ');
+    
+    const html = template.html
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company)
+      .replace('{{teamSize}}', formData.teamSize)
+      .replace('{{services}}', servicesList)
+      .replace('{{timeline}}', formData.timeline)
+      .replace('{{message}}', formData.message || 'No additional message');
 
-    return this.sendEmail({
-      to: this.adminEmail,
-      subject,
+    const text = template.text
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company)
+      .replace('{{teamSize}}', formData.teamSize)
+      .replace('{{services}}', servicesList)
+      .replace('{{timeline}}', formData.timeline)
+      .replace('{{message}}', formData.message || 'No additional message');
+
+    return await this.sendEmail({
+      to: this.config.toEmail,
+      subject: `Quote Request from ${formData.name} - ${formData.company}`,
       html,
+      text,
       replyTo: formData.email,
     });
   }
 
-  async sendDemoBookingNotification(formData: Record<string, unknown>) {
-    const subject = `New Demo Booking - ${formData.company || 'Unknown Company'}`;
+  // Send demo request email
+  async sendDemoRequestEmail(formData: {
+    name: string;
+    email: string;
+    company: string;
+    role: string;
+    teamSize: string;
+    preferredDate?: string;
+    preferredTime?: string;
+    message?: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('demo-request');
     
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2155CD;">New Demo Booking</h2>
-        
-        <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #155724;">Demo Scheduled</h3>
-          <p><strong>Company:</strong> ${formData.company}</p>
-          <p><strong>Contact:</strong> ${formData.name} (${formData.email})</p>
-          <p><strong>Demo Type:</strong> ${formData.demoType || 'General Demo'}</p>
-          <p><strong>Preferred Time:</strong> ${formData.preferredTime || 'Not specified'}</p>
-        </div>
-        
-        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #333;">Next Steps</h3>
-          <ol>
-            <li>Confirm the demo time with the client</li>
-            <li>Prepare demo materials based on their interest</li>
-            <li>Send calendar invite with meeting details</li>
-            <li>Follow up 24 hours before the demo</li>
-          </ol>
-        </div>
-      </div>
-    `;
+    const html = template.html
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company)
+      .replace('{{role}}', formData.role)
+      .replace('{{teamSize}}', formData.teamSize)
+      .replace('{{preferredDate}}', formData.preferredDate || 'Not specified')
+      .replace('{{preferredTime}}', formData.preferredTime || 'Not specified')
+      .replace('{{message}}', formData.message || 'No additional message');
 
-    return this.sendEmail({
-      to: this.adminEmail,
-      subject,
+    const text = template.text
+      .replace('{{name}}', formData.name)
+      .replace('{{email}}', formData.email)
+      .replace('{{company}}', formData.company)
+      .replace('{{role}}', formData.role)
+      .replace('{{teamSize}}', formData.teamSize)
+      .replace('{{preferredDate}}', formData.preferredDate || 'Not specified')
+      .replace('{{preferredTime}}', formData.preferredTime || 'Not specified')
+      .replace('{{message}}', formData.message || 'No additional message');
+
+    return await this.sendEmail({
+      to: this.config.toEmail,
+      subject: `Demo Request from ${formData.name} - ${formData.company}`,
       html,
+      text,
       replyTo: formData.email,
     });
   }
 
-  async sendAutoReply(to: string, type: 'contact' | 'quote' | 'demo') {
-    const templates = {
-      contact: {
-        subject: 'Thank you for contacting MonoHR',
+  // Send newsletter email
+  async sendNewsletterEmail(
+    subscribers: string[],
+    subject: string,
+    content: string
+  ): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('newsletter');
+    
+    const html = template.html.replace('{{content}}', content);
+    const text = template.text.replace('{{content}}', content);
+
+    return await this.sendEmail({
+      to: subscribers,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  // Send password reset email
+  async sendPasswordResetEmail(userEmail: string, resetToken: string): Promise<{ success: boolean; error?: string }> {
+    const template = this.getEmailTemplate('password-reset');
+    const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${resetToken}`;
+    
+    const html = template.html
+      .replace('{{resetUrl}}', resetUrl)
+      .replace('{{userEmail}}', userEmail);
+
+    const text = template.text
+      .replace('{{resetUrl}}', resetUrl)
+      .replace('{{userEmail}}', userEmail);
+
+    return await this.sendEmail({
+      to: userEmail,
+      subject: template.subject,
+      html,
+      text,
+    });
+  }
+
+  // Get email template
+  private getEmailTemplate(templateName: string): EmailTemplate {
+    const templates: Record<string, EmailTemplate> = {
+      welcome: {
+        name: 'welcome',
+        subject: 'Welcome to MonoHR - Your EOR Journey Starts Here!',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Thank you for reaching out!</h2>
-            <p>Hi there,</p>
-            <p>Thank you for contacting MonoHR. We've received your message and will get back to you within 24 hours.</p>
-            <p>In the meantime, feel free to explore our resources:</p>
+            <h1 style="color: #2155CD;">Welcome to MonoHR, {{userName}}!</h1>
+            <p>Thank you for joining MonoHR. We're excited to help you scale your team in India.</p>
+            <p>Your email: {{userEmail}}</p>
+            <p>What's next?</p>
             <ul>
-              <li><a href="/resources">EOR Guides & Resources</a></li>
-              <li><a href="/pricing">Transparent Pricing</a></li>
-              <li><a href="/about">About Our Team</a></li>
+              <li>Explore our EOR services</li>
+              <li>Schedule a consultation</li>
+              <li>Get your custom quote</li>
             </ul>
             <p>Best regards,<br>The MonoHR Team</p>
           </div>
-        `
+        `,
+        text: `
+          Welcome to MonoHR, {{userName}}!
+          
+          Thank you for joining MonoHR. We're excited to help you scale your team in India.
+          
+          Your email: {{userEmail}}
+          
+          What's next?
+          - Explore our EOR services
+          - Schedule a consultation
+          - Get your custom quote
+          
+          Best regards,
+          The MonoHR Team
+        `,
       },
-      quote: {
-        subject: 'Your EOR India Quote Request - Next Steps',
+      'contact-form': {
+        name: 'contact-form',
+        subject: 'New Contact Form Submission',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Quote Request Received</h2>
-            <p>Hi there,</p>
-            <p>Thank you for requesting a quote for EOR services in India. Our team is preparing a customized proposal for your company.</p>
-            <p><strong>What happens next:</strong></p>
-            <ol>
-              <li>Our EOR specialists will review your requirements</li>
-              <li>We'll prepare a detailed quote within 4 hours</li>
-              <li>We'll schedule a call to discuss the proposal</li>
-            </ol>
-            <p>In the meantime, you can use our <a href="/">cost calculator</a> to get an estimate.</p>
-            <p>Best regards,<br>The MonoHR Team</p>
+            <h2 style="color: #2155CD;">New Contact Form Submission</h2>
+            <p><strong>Name:</strong> {{name}}</p>
+            <p><strong>Email:</strong> {{email}}</p>
+            <p><strong>Company:</strong> {{company}}</p>
+            <p><strong>Phone:</strong> {{phone}}</p>
+            <p><strong>Subject:</strong> {{subject}}</p>
+            <p><strong>Message:</strong></p>
+            <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{message}}</p>
           </div>
-        `
+        `,
+        text: `
+          New Contact Form Submission
+          
+          Name: {{name}}
+          Email: {{email}}
+          Company: {{company}}
+          Phone: {{phone}}
+          Subject: {{subject}}
+          
+          Message:
+          {{message}}
+        `,
       },
-      demo: {
-        subject: 'Demo Booking Confirmed - What to Expect',
+      'quote-request': {
+        name: 'quote-request',
+        subject: 'New Quote Request',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2155CD;">Demo Booking Confirmed</h2>
-            <p>Hi there,</p>
-            <p>Thank you for booking a demo with MonoHR. We're excited to show you how we can help scale your team in India.</p>
-            <p><strong>What to expect:</strong></p>
-            <ul>
-              <li>30-minute personalized demo</li>
-              <li>Live walkthrough of our platform</li>
-              <li>Q&A session with our EOR experts</li>
-              <li>Customized recommendations for your use case</li>
-            </ul>
-            <p>We'll send you a calendar invite shortly with the meeting details.</p>
+            <h2 style="color: #2155CD;">New Quote Request</h2>
+            <p><strong>Name:</strong> {{name}}</p>
+            <p><strong>Email:</strong> {{email}}</p>
+            <p><strong>Company:</strong> {{company}}</p>
+            <p><strong>Team Size:</strong> {{teamSize}}</p>
+            <p><strong>Services:</strong> {{services}}</p>
+            <p><strong>Timeline:</strong> {{timeline}}</p>
+            <p><strong>Additional Message:</strong></p>
+            <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{message}}</p>
+          </div>
+        `,
+        text: `
+          New Quote Request
+          
+          Name: {{name}}
+          Email: {{email}}
+          Company: {{company}}
+          Team Size: {{teamSize}}
+          Services: {{services}}
+          Timeline: {{timeline}}
+          
+          Additional Message:
+          {{message}}
+        `,
+      },
+      'demo-request': {
+        name: 'demo-request',
+        subject: 'New Demo Request',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2155CD;">New Demo Request</h2>
+            <p><strong>Name:</strong> {{name}}</p>
+            <p><strong>Email:</strong> {{email}}</p>
+            <p><strong>Company:</strong> {{company}}</p>
+            <p><strong>Role:</strong> {{role}}</p>
+            <p><strong>Team Size:</strong> {{teamSize}}</p>
+            <p><strong>Preferred Date:</strong> {{preferredDate}}</p>
+            <p><strong>Preferred Time:</strong> {{preferredTime}}</p>
+            <p><strong>Additional Message:</strong></p>
+            <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{message}}</p>
+          </div>
+        `,
+        text: `
+          New Demo Request
+          
+          Name: {{name}}
+          Email: {{email}}
+          Company: {{company}}
+          Role: {{role}}
+          Team Size: {{teamSize}}
+          Preferred Date: {{preferredDate}}
+          Preferred Time: {{preferredTime}}
+          
+          Additional Message:
+          {{message}}
+        `,
+      },
+      newsletter: {
+        name: 'newsletter',
+        subject: 'MonoHR Newsletter',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #2155CD;">MonoHR Newsletter</h1>
+            {{content}}
             <p>Best regards,<br>The MonoHR Team</p>
           </div>
-        `
-      }
+        `,
+        text: `
+          MonoHR Newsletter
+          
+          {{content}}
+          
+          Best regards,
+          The MonoHR Team
+        `,
+      },
+      'password-reset': {
+        name: 'password-reset',
+        subject: 'Reset Your Password - MonoHR',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #2155CD;">Reset Your Password</h1>
+            <p>Hello,</p>
+            <p>You requested to reset your password for your MonoHR account ({{userEmail}}).</p>
+            <p>Click the button below to reset your password:</p>
+            <a href="{{resetUrl}}" style="background: #2155CD; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p>{{resetUrl}}</p>
+            <p>This link will expire in 24 hours.</p>
+            <p>If you didn't request this password reset, please ignore this email.</p>
+          </div>
+        `,
+        text: `
+          Reset Your Password
+          
+          Hello,
+          
+          You requested to reset your password for your MonoHR account ({{userEmail}}).
+          
+          Click the link below to reset your password:
+          {{resetUrl}}
+          
+          This link will expire in 24 hours.
+          
+          If you didn't request this password reset, please ignore this email.
+        `,
+      },
     };
 
-    const template = templates[type];
-    return this.sendEmail({
-      to,
-      subject: template.subject,
-      html: template.html,
-    });
+    return templates[templateName] || templates.welcome;
   }
 }
 
+// Export singleton instance
 export const emailService = new EmailService();
+
+// Helper functions
+export async function sendWelcomeEmail(userEmail: string, userName?: string) {
+  return await emailService.sendWelcomeEmail(userEmail, userName);
+}
+
+export async function sendContactFormEmail(formData: any) {
+  return await emailService.sendContactFormEmail(formData);
+}
+
+export async function sendQuoteRequestEmail(formData: any) {
+  return await emailService.sendQuoteRequestEmail(formData);
+}
+
+export async function sendDemoRequestEmail(formData: any) {
+  return await emailService.sendDemoRequestEmail(formData);
+}
