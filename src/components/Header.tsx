@@ -21,6 +21,11 @@ export function Header({ settings }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Handle scroll effect
   useEffect(() => {
@@ -136,28 +141,26 @@ export function Header({ settings }: HeaderProps) {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-brand-600 hover:bg-gray-100 transition-colors touch-target"
-            aria-label="Toggle navigation menu"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {isClient && (
+            <button
+              onClick={toggleMenu}
+              className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-brand-600 hover:bg-gray-100 transition-colors touch-target"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
+        {isClient && (
+          <AnimatePresence>
+            {isMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden border-t border-gray-200 bg-white"
               id="mobile-menu"
-              role="navigation"
-              aria-label="Mobile navigation menu"
             >
               <div className="py-4 space-y-2">
                 {settings.navLinks.map((link, index) => (
@@ -167,8 +170,6 @@ export function Header({ settings }: HeaderProps) {
                         <button
                           onClick={() => toggleDropdown(link.label)}
                           className="flex items-center justify-between w-full px-4 py-3 text-left text-gray-700 hover:text-brand-600 hover:bg-gray-50 rounded-lg transition-colors touch-target"
-                          aria-expanded={activeDropdown === link.label}
-                          aria-controls={`mobile-submenu-${link.label}`}
                         >
                           <span className="font-medium">{link.label}</span>
                           <ChevronDown className={`w-4 h-4 transition-transform ${
@@ -220,6 +221,7 @@ export function Header({ settings }: HeaderProps) {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </div>
     </header>
   );

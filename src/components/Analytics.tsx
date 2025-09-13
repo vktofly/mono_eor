@@ -139,7 +139,7 @@ export function Analytics() {
     const handleButtonClick = (event: Event) => {
       const button = event.target as HTMLElement;
       if (button.tagName === 'BUTTON' || button.tagName === 'A') {
-        const buttonText = button.textContent?.trim() || button.getAttribute('aria-label') || 'unknown_button';
+        const buttonText = button.textContent?.trim() || 'unknown_button';
         const buttonLocation = pathname;
         
         analytics.trackButtonClick(buttonText, buttonLocation);

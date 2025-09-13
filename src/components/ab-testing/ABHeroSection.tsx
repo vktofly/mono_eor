@@ -333,8 +333,6 @@ export function ABHeroSection() {
                 type="email"
                 placeholder="Enter your work email"
                 className="w-full rounded-xl border-0 bg-white/20 px-6 py-4 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/30 focus:bg-white/25 transition-all touch-target text-lg"
-                aria-label="Work email address"
-                aria-describedby="email-error"
               />
               {errors.email && (
                 <span id="email-error" className="text-red-300 text-sm">
@@ -352,7 +350,6 @@ export function ABHeroSection() {
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                aria-label={`${config.ctaText} with EOR services`}
               >
                 {submitting ? (
                   <div className="flex items-center gap-2">

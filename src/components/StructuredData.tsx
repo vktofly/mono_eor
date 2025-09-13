@@ -40,7 +40,7 @@ export function StructuredData() {
           "@type": "Offer",
           "price": "99",
           "priceCurrency": "USD",
-          "description": "Starting from $99 per employee per month"
+          "description": "Starting from $199 per employee per month"
         }
       },
       {
@@ -90,7 +90,7 @@ export function StructuredData() {
         "name": "What are the real cost savings compared to setting up our own entity?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Our clients typically save 40-60% compared to traditional entity setup. This includes avoiding ₹15-25 lakhs in legal setup costs, ₹5-10 lakhs annually in compliance overhead, and 6-12 months of setup time."
+          "text": "Our clients typically save 40-60% compared to traditional entity setup. This includes avoiding $18,000-30,000 in legal setup costs, $6,000-12,000 annually in compliance overhead, and 6-12 months of setup time."
         }
       },
       {

@@ -184,7 +184,7 @@ const glossaryTerms = [
   },
   {
     term: "ESI (Employee State Insurance)",
-    definition: "A social security scheme providing medical and cash benefits to employees earning up to ₹21,000 per month."
+    definition: "A social security scheme providing medical and cash benefits to employees earning up to $250 per month."
   },
   {
     term: "TDS (Tax Deducted at Source)",

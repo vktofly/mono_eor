@@ -60,7 +60,6 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
       
       {/* Visual Breadcrumbs */}
       <nav 
-        aria-label="Breadcrumb" 
         className={`flex items-center space-x-2 text-sm text-gray-600 ${className}`}
       >
         <ol className="flex items-center space-x-2">
@@ -81,7 +80,7 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
               )}
               
               {index === breadcrumbItems.length - 1 ? (
-                <span className="font-medium text-gray-900" aria-current="page">
+                <span className="font-medium text-gray-900">
                   {item.name}
                 </span>
               ) : (

@@ -30,7 +30,7 @@ export const eorFaqs = [
 ];
 
 export const pricingSummary = [
-  { tier: "EOR", price: "$99+ / employee / mo", highlights: ["Payroll", "Compliance", "Benefits"] },
+  { tier: "EOR", price: "$199+ / employee / mo", highlights: ["Payroll", "Compliance", "Benefits"] },
   { tier: "Contractors", price: "$X / contractor / mo", highlights: ["Invoices", "Payouts", "Compliance"] },
 ];
 
@@ -58,7 +58,7 @@ export const payrollFaqs = [
 
 export const contractorBenefits = [
   { title: "Fast onboarding", body: "Collect KYC and contract details quickly." },
-  { title: "On-time payouts", body: "Pay to Indian bank accounts in INR." },
+  { title: "On-time payouts", body: "Pay to Indian bank accounts in USD." },
   { title: "Invoice tracking", body: "Automated invoices and approvals." },
 ];
 

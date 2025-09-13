@@ -276,7 +276,6 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
   };
 
 
-  // Accessibility: Reduced motion support
   const prefersReducedMotion = typeof window !== 'undefined' && 
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -473,8 +472,6 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     type="email"
                     placeholder="Enter your work email"
                     className="w-full rounded-xl border-0 bg-white/20 px-6 py-4 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/30 focus:bg-white/25 transition-all touch-target text-lg"
-                    aria-label="Work email address"
-                    aria-describedby="email-error"
                   />
                   {formState.errors.email && (
                     <span id="email-error" className="text-red-300 text-sm">
@@ -487,7 +484,6 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     className="w-full px-8 py-4 rounded-xl font-bold text-white transition-all touch-target text-lg bg-gradient-to-r from-cta-500 to-cta-600 hover:from-cta-600 hover:to-cta-700 shadow-lg hover:shadow-xl disabled:bg-gray-500 disabled:cursor-not-allowed"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label="Get Started with EOR services"
                   >
                     {submitting ? (
                       <div className="flex items-center gap-2">
@@ -1226,7 +1222,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
             <h2 className="text-4xl font-bold text-text-primary mb-6">Maximize Your Team&apos;s Take-Home Pay</h2>
             <p className="text-xl text-text-secondary max-w-4xl mx-auto leading-relaxed">
               Our EOR platform restructures salaries to maximize take-home pay while ensuring full compliance. 
-              See how we turn ₹1,00,000 into ₹82,800 take-home pay with our interactive salary optimizer.
+              See how we turn $1,200 into $1,000 take-home pay with our interactive salary optimizer.
             </p>
           </motion.div>
 
@@ -1267,14 +1263,14 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     <Sankey
                       data={{
                         nodes: [
-                          { name: "₹1,00,000\nTotal Salary", fill: "#10B981" },
-                          { name: "₹50,000\nBasic Salary\n(50%)", fill: "#3B82F6" },
-                          { name: "₹25,000\nHRA\n(25%)", fill: "#8B5CF6" },
-                          { name: "₹15,000\nFlexible\nAllowances\n(15%)", fill: "#F59E0B" },
-                          { name: "₹10,000\nPF Contribution\n(10%)", fill: "#EF4444" },
-                          { name: "₹82,800\nTake-Home Pay\n(83%)", fill: "#10B981" },
-                          { name: "₹5,000\nTax Savings\n(5%)", fill: "#06B6D4" },
-                          { name: "₹12,200\nBenefits & PF\n(12%)", fill: "#8B5CF6" }
+                          { name: "$1,200\nTotal Salary", fill: "#10B981" },
+                          { name: "$600\nBasic Salary\n(50%)", fill: "#3B82F6" },
+                          { name: "$300\nHRA\n(25%)", fill: "#8B5CF6" },
+                          { name: "$180\nFlexible\nAllowances\n(15%)", fill: "#F59E0B" },
+                          { name: "$120\nPF Contribution\n(10%)", fill: "#EF4444" },
+                          { name: "$1,000\nTake-Home Pay\n(83%)", fill: "#10B981" },
+                          { name: "$60\nTax Savings\n(5%)", fill: "#06B6D4" },
+                          { name: "$140\nBenefits & PF\n(12%)", fill: "#8B5CF6" }
                         ],
                         links: [
                           { source: 0, target: 1, value: 50 },
@@ -1315,7 +1311,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     transition={{ duration: 0.5, delay: 0.5 }}
                     viewport={{ once: true }}
                   >
-                    <strong>Example:</strong> ₹1,00,000 monthly salary optimized for maximum take-home pay
+                    <strong>Example:</strong> $1,200 monthly salary optimized for maximum take-home pay
                   </motion.p>
           </div>
                 </motion.div>
@@ -1354,16 +1350,16 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-text-secondary">Gross Salary:</span>
-                          <span className="font-semibold">₹1,00,000</span>
+                          <span className="font-semibold">$1,200</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-text-secondary">Tax Deduction:</span>
-                          <span className="font-semibold text-red-600">₹35,000 (35%)</span>
+                          <span className="font-semibold text-red-600">$420 (35%)</span>
                         </div>
                         <div className="border-t border-gray-200 pt-2">
                           <div className="flex justify-between">
                             <span className="font-bold text-text-primary">Take-Home Pay:</span>
-                            <span className="font-bold text-red-600">₹65,000</span>
+                            <span className="font-bold text-red-600">$780</span>
                           </div>
                         </div>
                       </div>
@@ -1386,16 +1382,16 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-text-secondary">Gross Salary:</span>
-                          <span className="font-semibold">₹1,00,000</span>
+                          <span className="font-semibold">$1,200</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-text-secondary">Effective Tax:</span>
-                          <span className="font-semibold text-cta-600">₹17,200 (17%)</span>
+                          <span className="font-semibold text-cta-600">$200 (17%)</span>
                         </div>
                         <div className="border-t border-gray-200 pt-2">
                           <div className="flex justify-between">
                             <span className="font-bold text-text-primary">Take-Home Pay:</span>
-                            <span className="font-bold text-cta-600">₹82,800</span>
+                            <span className="font-bold text-cta-600">$1,000</span>
                           </div>
                         </div>
                       </div>
@@ -1409,7 +1405,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                       transition={{ duration: 0.5, delay: 0.7 }}
                       viewport={{ once: true }}
                     >
-                      <div className="text-3xl font-bold mb-2">₹17,800</div>
+                      <div className="text-3xl font-bold mb-2">$220</div>
                       <div className="text-lg font-semibold">Extra Take-Home Pay</div>
                       <div className="text-sm opacity-90">27% more than traditional structure</div>
                     </motion.div>
@@ -1461,7 +1457,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                     window.location.href = '/contact';
                   }}
                 >
-                  Save ₹17,800 Per Employee - Start Now
+                  Save $220 Per Employee - Start Now
                 </motion.button>
               </motion.div>
             </div>
@@ -1605,7 +1601,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                           animate={{ scale: 1 }}
                           transition={{ duration: 0.3 }}
                         >
-                          ₹{calculatorData.avgSalary.toLocaleString()}
+                          ${calculatorData.avgSalary.toLocaleString()}
                         </motion.span>
                       </div>
                       <input 
@@ -1625,9 +1621,9 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                         }}
                       />
                       <div className="flex justify-between text-sm text-text-secondary mt-2">
-                        <span>₹10K</span>
-                        <span>₹100K</span>
-                        <span>₹200K+</span>
+                        <span>$120</span>
+                        <span>$1,200</span>
+                        <span>$2,400+</span>
                       </div>
                     </div>
 
@@ -1743,7 +1739,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ duration: 0.8, type: "spring", stiffness: 200 }}
                           >
-                            ₹<AnimatedCounter 
+                            $<AnimatedCounter 
                               end={Math.round(costs.savings)} 
                               duration={2}
                               className="text-6xl font-bold text-cta-600"
@@ -1810,7 +1806,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                               <div className="flex-1">
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="text-text-secondary">{item.label}</span>
-                                  <span className="font-semibold text-text-primary">₹{Math.round(item.value).toLocaleString()}</span>
+                                  <span className="font-semibold text-text-primary">${Math.round(item.value).toLocaleString()}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                   <motion.div 
@@ -1827,7 +1823,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                           <div className="border-t border-gray-200 pt-3 mt-4">
                             <div className="flex justify-between items-center">
                               <span className="text-lg font-bold text-red-600">Total Traditional Cost</span>
-                              <span className="text-xl font-bold text-red-600">₹{Math.round(costs.firstYearTraditionalCost).toLocaleString()}</span>
+                              <span className="text-xl font-bold text-red-600">${Math.round(costs.firstYearTraditionalCost).toLocaleString()}</span>
                             </div>
                           </div>
                         </div>
@@ -1848,7 +1844,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                             <div className="flex-1">
                               <div className="flex justify-between items-center mb-1">
                                 <span className="text-text-secondary">All-inclusive EOR Service</span>
-                                <span className="font-semibold text-text-primary">₹{Math.round(costs.eorCost).toLocaleString()}</span>
+                                <span className="font-semibold text-text-primary">${Math.round(costs.eorCost).toLocaleString()}</span>
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <motion.div 
@@ -1864,7 +1860,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                           <div className="border-t border-gray-200 pt-3 mt-4">
                             <div className="flex justify-between items-center">
                               <span className="text-lg font-bold text-green-600">Total EOR Cost</span>
-                              <span className="text-xl font-bold text-green-600">₹{Math.round(costs.eorCost).toLocaleString()}</span>
+                              <span className="text-xl font-bold text-green-600">${Math.round(costs.eorCost).toLocaleString()}</span>
                             </div>
                           </div>
                         </div>
@@ -2188,7 +2184,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-cta-600">₹4.2L annually</span>
+                <span className="font-medium text-cta-600">$5,000 annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">
@@ -2235,7 +2231,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-cta-600">₹12.8L annually</span>
+                <span className="font-medium text-cta-600">$15,000 annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">
@@ -2282,7 +2278,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-secondary">Savings</span>
-                <span className="font-medium text-cta-600">₹28.5L annually</span>
+                <span className="font-medium text-cta-600">$35,000 annually</span>
               </div>
             </div>
             <blockquote className="text-text-secondary italic mb-4">
@@ -2571,7 +2567,7 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
                 },
                 {
                   question: "What are the real cost savings compared to setting up our own entity?",
-                  answer: "Our clients typically save 40-60% compared to traditional entity setup. This includes avoiding ₹15-25 lakhs in legal setup costs, ₹5-10 lakhs annually in compliance overhead, and 6-12 months of setup time. Plus, no minimum capital requirements or complex registrations."
+                  answer: "Our clients typically save 40-60% compared to traditional entity setup. This includes avoiding $18,000-30,000 in legal setup costs, $6,000-12,000 annually in compliance overhead, and 6-12 months of setup time. Plus, no minimum capital requirements or complex registrations."
                 },
                 {
                   question: "How do you handle Indian cultural nuances and employee expectations?",

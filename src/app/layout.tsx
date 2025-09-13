@@ -12,8 +12,6 @@ import { CriticalCSS } from "@/components/optimized/CriticalCSS";
 import { ResourcePreloader } from "@/components/optimized/CriticalCSS";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { PerformanceMonitor } from "@/components/optimized/PerformanceMonitor";
-import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
-import { AccessibilityToolbar } from "@/components/accessibility/AccessibilityToolbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -136,14 +134,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AccessibilityProvider>
-          {/* Skip Link for Screen Readers */}
-          <a href="#main-content" className="skip-link">
-            Skip to main content
-          </a>
-          
           <HeaderWrapper />
-          <main id="main-content" className="pt-16 lg:pt-20">
+          <main className="pt-16 lg:pt-20">
             {children}
           </main>
           <Footer />
@@ -152,9 +144,7 @@ export default function RootLayout({
           <Analytics />
                  <PerformanceMonitor />
                  <CoreWebVitals />
-                 <AccessibilityToolbar />
                  <ExitIntentPopup />
-        </AccessibilityProvider>
       </body>
     </html>
   );

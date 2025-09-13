@@ -81,6 +81,12 @@ export function ContactPage() {
     setIsFormValid(isValid);
   }, [watchedFields, isValid]);
 
+  // Prevent hydration mismatch by setting initial state on client
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     
@@ -262,21 +268,23 @@ export function ContactPage() {
                   )}
                   
                   {/* Form Progress Indicator */}
-                  <div className="mt-6">
-                    <div className="flex justify-between text-sm text-gray-500 mb-2">
-                      <span>Required Fields</span>
-                      <span>{Math.round(formProgress)}% Complete</span>
+                  {isClient && (
+                    <div className="mt-6">
+                      <div className="flex justify-between text-sm text-gray-500 mb-2">
+                        <span>Required Fields</span>
+                        <span>{Math.round(formProgress)}% Complete</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <motion.div
+                          className="bg-gradient-to-r from-brand-500 to-brand-600 h-2 rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${formProgress}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">Fields marked with * are required</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <motion.div
-                        className="bg-gradient-to-r from-brand-500 to-brand-600 h-2 rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${formProgress}%` }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1">Fields marked with * are required</p>
-                  </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
@@ -293,11 +301,9 @@ export function ContactPage() {
                             : "border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                         }`}
                         placeholder="Enter your full name"
-                        aria-invalid={errors.name ? "true" : "false"}
-                        aria-describedby={errors.name ? "name-error" : undefined}
                       />
                       {errors.name && (
-                        <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+                        <p className="mt-1 text-sm text-red-600">
                           {errors.name.message}
                         </p>
                       )}
