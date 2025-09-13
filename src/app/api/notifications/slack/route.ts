@@ -84,15 +84,18 @@ export async function POST(req: Request) {
           elements: [
             {
               type: "mrkdwn",
-              text: `⏰ Submitted at: ${new Date().toLocaleString('en-US', { 
-                timeZone: 'Asia/Kolkata',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })} IST`
+              text: {
+                type: "mrkdwn",
+                text: `⏰ Submitted at: ${new Date().toLocaleString('en-US', { 
+                  timeZone: 'Asia/Kolkata',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })} IST`
+              }
             }
           ]
         }
