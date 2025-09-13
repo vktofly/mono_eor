@@ -25,6 +25,7 @@ const contactFormSchema = z.object({
   interest: z.string().optional(),
   source: z.string().optional(),
   formType: z.string().default('contact'),
+  employees: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -73,6 +74,33 @@ export async function POST(req: Request) {
       // Continue processing even if HubSpot fails
     }
     
+    // Send Slack notification
+    try {
+      const slackResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/notifications/slack`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: validatedData.name,
+          email: validatedData.email,
+          company: validatedData.company,
+          phone: validatedData.phone,
+          message: validatedData.message,
+          interest: validatedData.interest,
+          country: validatedData.country,
+          employees: validatedData.employees,
+        }),
+      });
+
+      if (slackResponse.ok) {
+        console.log('Slack notification sent successfully');
+      } else {
+        console.error('Slack notification failed:', slackResponse.status);
+      }
+    } catch (slackError) {
+      console.error('Slack notification error:', slackError);
+      // Continue processing even if Slack notification fails
+    }
+
     // Send email notifications using our enhanced email service
     try {
       // Send notification to admin
@@ -149,7 +177,7 @@ export async function POST(req: Request) {
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Thank you for your message. We\'ll get back to you within 24 hours!',
+      message: 'Thank you for your message. We\'ll get back to you within 30 minutes!',
       processingTime: processingTime,
     });
     
