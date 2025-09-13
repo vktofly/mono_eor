@@ -13,15 +13,22 @@ declare global {
 }
 
 // Initialize Calendly widget
+let calendlyInitialized = false;
+
 export function initializeCalendly() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || calendlyInitialized) return;
 
   // Load Calendly script if not already loaded
   if (!document.querySelector('script[src*="calendly.com"]')) {
     const script = document.createElement('script');
     script.src = 'https://assets.calendly.com/assets/external/widget.js';
     script.async = true;
+    script.onload = () => {
+      calendlyInitialized = true;
+    };
     document.head.appendChild(script);
+  } else {
+    calendlyInitialized = true;
   }
 }
 
@@ -44,6 +51,11 @@ export function initializeInlineCalendly(containerId: string, calendlyUrl: strin
 
   const container = document.getElementById(containerId);
   if (!container) return;
+
+  // Check if widget is already initialized
+  if (container.querySelector('.calendly-inline-widget')) {
+    return;
+  }
 
   window.Calendly.initInlineWidget({
     url: calendlyUrl,

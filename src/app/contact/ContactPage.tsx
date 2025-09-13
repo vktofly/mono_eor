@@ -13,13 +13,10 @@ import { useSearchParams } from "next/navigation";
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  company: z.string().min(2, "Company name is required"),
+  company: z.string().optional(),
   phone: z.string().optional(),
   country: z.string().optional(),
-  interest: z.enum(["eor", "contractors", "pricing", "general"]).refine(
-    (val) => val !== undefined,
-    { message: "Please select your area of interest" }
-  ),
+  interest: z.string().optional(),
   employees: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
   source: z.string(),
@@ -72,9 +69,9 @@ export function ContactPage() {
     }
   }, [searchParams, setValue]);
 
-  // Calculate form progress
+  // Calculate form progress - only count required fields
   useEffect(() => {
-    const requiredFields = ['name', 'email', 'company', 'interest', 'message'];
+    const requiredFields = ['name', 'email', 'message'];
     const filledFields = requiredFields.filter(field => 
       watchedFields[field as keyof ContactFormData] && 
       watchedFields[field as keyof ContactFormData]?.toString().trim() !== ''
@@ -207,7 +204,7 @@ export function ContactPage() {
               >
                 Send Message
               </button>
-              <button
+              {/* <button
                 onClick={() => handleTabClick("calendly")}
                 className={`px-6 py-3 rounded-md font-medium transition-all duration-200 ${
                   activeTab === "calendly"
@@ -216,7 +213,7 @@ export function ContactPage() {
                 }`}
               >
                 Book a Call
-              </button>
+              </button> */}
               <button
                 onClick={() => handleTabClick("direct")}
                 className={`px-6 py-3 rounded-md font-medium transition-all duration-200 ${
@@ -267,7 +264,7 @@ export function ContactPage() {
                   {/* Form Progress Indicator */}
                   <div className="mt-6">
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
-                      <span>Form Progress</span>
+                      <span>Required Fields</span>
                       <span>{Math.round(formProgress)}% Complete</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -278,6 +275,7 @@ export function ContactPage() {
                         transition={{ duration: 0.3 }}
                       />
                     </div>
+                    <p className="text-xs text-gray-400 mt-1">Fields marked with * are required</p>
                   </div>
                 </div>
 
@@ -333,16 +331,13 @@ export function ContactPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Company *
+                        Company
                       </label>
                       <input
                         {...register("company")}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                         placeholder="Your company name"
                       />
-                      {errors.company && (
-                        <p className="mt-1 text-sm text-red-600">{errors.company.message}</p>
-                      )}
                     </div>
 
                     <div>
@@ -372,7 +367,7 @@ export function ContactPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Area of Interest *
+                        Area of Interest
                       </label>
                       <select
                         {...register("interest")}
@@ -384,9 +379,6 @@ export function ContactPage() {
                         <option value="pricing">Pricing & Plans</option>
                         <option value="general">General Inquiry</option>
                       </select>
-                      {errors.interest && (
-                        <p className="mt-1 text-sm text-red-600">{errors.interest.message}</p>
-                      )}
                     </div>
                   </div>
 
@@ -448,12 +440,12 @@ export function ContactPage() {
                     ) : isFormValid ? (
                       <div className="flex items-center justify-center gap-2">
                         <span>🚀</span>
-                        <span>Get My Free Plan - Save $5,000</span>
+                        <span>Send Message - Get Free Consultation</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-2">
                         <span>📝</span>
-                        <span>Complete the form to continue</span>
+                        <span>Fill in your name, email, and message to continue</span>
                       </div>
                     )}
                   </motion.button>
@@ -557,7 +549,7 @@ export function ContactPage() {
               </motion.div>
             )}
 
-            {activeTab === "calendly" && (
+            {/* {activeTab === "calendly" && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -603,13 +595,16 @@ export function ContactPage() {
                   </ul>
                 </div>
 
-                <CalendlyWidget
-                  eventType="consultation"
-                  inline={true}
-                  className="w-full"
-                />
+                <div className="h-[800px] w-full min-h-[600px]">
+                  <CalendlyWidget
+                    key="calendly-consultation-widget"
+                    eventType="consultation"
+                    inline={true}
+                    className="h-full w-full"
+                  />
+                </div>
               </motion.div>
-            )}
+            )} */}
 
             {activeTab === "direct" && (
               <motion.div

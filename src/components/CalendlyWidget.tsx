@@ -29,7 +29,9 @@ export function CalendlyWidget({
 }: CalendlyWidgetProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [widgetId] = useState(() => `calendly-inline-${eventType}-${Math.random().toString(36).substr(2, 9)}`);
   const calendlyUrl = calendly.getCalendlyUrl(eventType);
 
   useEffect(() => {
@@ -95,18 +97,32 @@ export function CalendlyWidget({
     calendly.closeCalendlyPopup();
   };
 
-  if (inline && isLoaded && containerRef.current) {
-    // Initialize inline widget
-    calendly.initializeInlineCalendly(containerRef.current.id, calendlyUrl);
-  }
+  useEffect(() => {
+    if (inline && isLoaded && containerRef.current && !isInitialized) {
+      // Initialize inline widget only once
+      calendly.initializeInlineCalendly(widgetId, calendlyUrl);
+      setIsInitialized(true);
+    }
+
+    // Cleanup function to prevent multiple widgets
+    return () => {
+      if (containerRef.current) {
+        const existingWidget = containerRef.current.querySelector('.calendly-inline-widget');
+        if (existingWidget) {
+          existingWidget.remove();
+        }
+      }
+      setIsInitialized(false);
+    };
+  }, [inline, isLoaded, calendlyUrl, widgetId, isInitialized]);
 
   if (inline) {
     return (
-      <div className={className}>
+      <div className={`${className} h-full`}>
         <div
           ref={containerRef}
-          id={`calendly-inline-${eventType}`}
-          className="min-h-[600px] w-full"
+          id={widgetId}
+          className="h-full w-full min-h-[600px]"
         />
       </div>
     );

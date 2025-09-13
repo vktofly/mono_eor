@@ -341,18 +341,14 @@ export function EorClient({ calendlyUrl }: { calendlyUrl?: string }) {
     });
     
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Thanks! We'll reach out shortly.");
+      // No API call needed - just redirect to contact page
+      toast.success("Redirecting to contact form...");
       trackEvent('hero_form_success');
       reset();
+      
       // Navigate to contact page with pre-populated email
       window.location.href = `/contact?email=${encodeURIComponent(values.email)}&source=hero_form`;
-    } catch {
+    } catch (error) {
       toast.error("Something went wrong. Please try again.");
       trackEvent('hero_form_error');
     } finally {

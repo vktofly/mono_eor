@@ -1,18 +1,7 @@
 import { NextResponse } from "next/server";
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { z } from 'zod';
 import { hubspotService } from '@/lib/hubspot';
-import { emailService } from '@/lib/email';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
-
-// Initialize SES client with proper error handling
-let ses: SESClient | null = null;
-try {
-  const region = process.env.AWS_REGION || "us-east-1";
-  ses = new SESClient({ region });
-} catch (error) {
-  console.warn('Failed to initialize SES client:', error);
-}
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -101,68 +90,7 @@ export async function POST(req: Request) {
       // Continue processing even if Slack notification fails
     }
 
-    // Send email notifications using our enhanced email service
-    try {
-      // Send notification to admin
-      await emailService.sendContactFormEmail({
-        name: validatedData.name,
-        email: validatedData.email,
-        company: validatedData.company,
-        phone: validatedData.phone,
-        message: validatedData.message,
-        subject: validatedData.interest || 'General Inquiry',
-      });
-      
-      // Send confirmation to user
-      await emailService.sendWelcomeEmail(validatedData.email, validatedData.name);
-    } catch (emailError) {
-      console.error('Email service error:', emailError);
-      
-      // Fallback to original SES method with proper validation
-      try {
-        const toAddress = process.env.SES_SALES_TO;
-        const fromAddress = process.env.SES_FROM_EMAIL;
-
-        if (!toAddress || !fromAddress) {
-          console.error('Missing required email environment variables for fallback');
-          throw new Error('Email configuration incomplete');
-        }
-
-        if (!ses) {
-          console.error('SES client not initialized');
-          throw new Error('Email service unavailable');
-        }
-
-        const params = new SendEmailCommand({
-          Source: fromAddress,
-          Destination: { ToAddresses: [toAddress] },
-          Message: {
-            Subject: { Data: `New lead: ${validatedData.interest || "General"} - ${validatedData.company || "Unknown"}` },
-            Body: {
-              Html: {
-                Data: `
-                  <h2>New Lead - MonoHR</h2>
-                  <p><b>Name:</b> ${validatedData.name || "-"}</p>
-                  <p><b>Email:</b> ${validatedData.email || "-"}</p>
-                  <p><b>Company:</b> ${validatedData.company || "-"}</p>
-                  <p><b>Country:</b> ${validatedData.country || "-"}</p>
-                  <p><b>Interest:</b> ${validatedData.interest || "-"}</p>
-                  <p><b>Message:</b> ${validatedData.message || "-"}</p>
-                `,
-              },
-              Text: { Data: `Lead: ${validatedData.name} <${validatedData.email}> - ${validatedData.company} - ${validatedData.interest}` },
-            },
-          },
-          ReplyToAddresses: validatedData.email ? [validatedData.email] : undefined,
-        });
-
-        await ses.send(params);
-        console.log('Fallback email sent successfully via SES');
-      } catch (fallbackError) {
-        console.error('Fallback email sending failed:', fallbackError);
-        // Continue processing even if all email methods fail
-      }
-    }
+    // Email functionality removed - only Slack notifications are sent
     
     // Log successful submission
     const processingTime = Date.now() - startTime;
