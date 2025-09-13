@@ -1,20 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from 'zod';
-import { hubspotService } from '@/lib/hubspot';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 // Form validation schema
-const contactFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+const pricingFormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  company: z.string().optional(),
-  country: z.string().optional(),
-  phone: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-  interest: z.string().optional(),
-  source: z.string().optional(),
-  formType: z.string().default('contact'),
-  employees: z.string().optional(),
+  company: z.string().min(2, 'Company name must be at least 2 characters'),
+  employees: z.string().min(1, 'Please select number of employees'),
+  interest: z.enum(["contractor", "professional", "enterprise", "demo", "quote"]),
 });
 
 export async function POST(req: Request) {
@@ -24,38 +17,23 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     // Validate form data
-    const validatedData = contactFormSchema.parse(body);
+    const validatedData = pricingFormSchema.parse(body);
     
     // Log form submission attempt
-    console.log('Contact form submission received:', {
+    console.log('Pricing form submission received:', {
       timestamp: new Date().toISOString(),
       ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
       userAgent: req.headers.get('user-agent') || 'unknown',
-      formType: validatedData.formType,
+      formType: 'pricing_quote',
     });
     
     // Track form submission
     trackEvent(AnalyticsEvents.FORM_SUBMIT, {
-      form_type: validatedData.formType,
+      form_type: 'pricing_quote',
       form_source: req.headers.get('referer') || 'unknown',
       user_company: validatedData.company,
       user_interest: validatedData.interest,
     });
-    
-    // Send to HubSpot CRM
-    try {
-      await hubspotService.createContact({
-        email: validatedData.email,
-        firstname: validatedData.name?.split(' ')[0],
-        lastname: validatedData.name?.split(' ').slice(1).join(' '),
-        company: validatedData.company,
-        phone: validatedData.phone,
-        // Removed custom fields that don't exist in HubSpot
-      });
-    } catch (hubspotError) {
-      console.error('HubSpot integration error:', hubspotError);
-      // Continue processing even if HubSpot fails
-    }
     
     // Send Slack notification
     try {
@@ -63,49 +41,47 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: validatedData.name,
+          name: validatedData.company || 'Pricing Form Submission',
           email: validatedData.email,
           company: validatedData.company,
-          phone: validatedData.phone,
-          message: validatedData.message,
+          phone: 'Not provided',
+          message: `Pricing inquiry for ${validatedData.interest} plan with ${validatedData.employees} employees`,
           interest: validatedData.interest,
-          country: validatedData.country,
+          country: 'Not provided',
           employees: validatedData.employees,
         }),
       });
 
       if (slackResponse.ok) {
-        console.log('Slack notification sent successfully');
+        console.log('Pricing form Slack notification sent successfully');
       } else {
-        console.error('Slack notification failed:', slackResponse.status);
+        console.error('Pricing form Slack notification failed:', slackResponse.status);
       }
     } catch (slackError) {
-      console.error('Slack notification error:', slackError);
+      console.error('Pricing form Slack notification error:', slackError);
       // Continue processing even if Slack notification fails
     }
-
-    // Email functionality removed - only Slack notifications are sent
     
     // Log successful submission
     const processingTime = Date.now() - startTime;
-    console.log('Contact form submission processed successfully:', {
-      name: validatedData.name,
+    console.log('Pricing form submission processed successfully:', {
       email: validatedData.email,
       company: validatedData.company,
-      formType: validatedData.formType,
+      interest: validatedData.interest,
+      employees: validatedData.employees,
       processingTimeMs: processingTime,
       timestamp: new Date().toISOString(),
     });
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Thank you for your message. We\'ll get back to you within 30 minutes!',
+      message: 'Thank you for your interest! We\'ll be in touch within 24 hours with your personalized quote.',
       processingTime: processingTime,
     });
     
   } catch (error) {
     const processingTime = Date.now() - startTime;
-    console.error('Contact form error:', {
+    console.error('Pricing form error:', {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       processingTimeMs: processingTime,
@@ -136,5 +112,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-

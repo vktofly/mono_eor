@@ -230,7 +230,16 @@ export default function ContractorClient() {
     }
   });
 
+  // Form state debugging (can be removed in production)
+  // console.log('Form state:', {
+  //   isValid: formState.isValid,
+  //   isSubmitting: formState.isSubmitting,
+  //   errors: formState.errors
+  // });
+
   const onSubmit = async (data: ContractorFormData) => {
+    console.log('Contractor form submitted with data:', data);
+    console.log('Form validation passed, proceeding with submission...');
     try {
       trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
         form_type: 'contractor_management',
@@ -238,9 +247,27 @@ export default function ContractorClient() {
         contractors: data.contractors
       });
 
-      console.log('Contractor form submitted:', data);
-      toast.success("Thank you! We'll be in touch within 24 hours.");
+      console.log('Sending contractor form to API...');
+      // Send to backend API
+      const response = await fetch('/api/contractor-management', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log('Contractor API response status:', response.status);
+      const result = await response.json();
+      console.log('Contractor API response:', result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
     } catch (error) {
+      console.error('Contractor form submission error:', error);
       trackEvent(AnalyticsEvents.FORM_ERROR, {
         form_type: 'contractor_management',
         error: 'submission_failed'

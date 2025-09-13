@@ -23,7 +23,7 @@ const pricingFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   company: z.string().min(2, "Company name must be at least 2 characters"),
   employees: z.string().min(1, "Please select number of employees"),
-  interest: z.enum(["starter", "professional", "enterprise", "demo", "quote"]),
+  interest: z.enum(["contractor", "professional", "enterprise", "demo", "quote"]),
 });
 
 type PricingFormData = z.infer<typeof pricingFormSchema>;
@@ -31,21 +31,23 @@ type PricingFormData = z.infer<typeof pricingFormSchema>;
 // Pricing tiers data
 const pricingTiers = [
   {
-    name: "Starter",
-    tagline: "Perfect for small teams",
-    price: 299,
+    name: "Contractor",
+    tagline: "Most hassle-free option - Perfect for contractors and freelancers",
+    price: 39,
     priceNote: "base + $89/employee",
-    employeeRange: "1-10 employees",
+    employeeRange: "No team size limit - Most hassle-free",
     popular: false,
     features: [
       "48-hour setup guarantee",
-      "Basic EOR services",
-      "Email support",
-      "Payroll processing",
-      "Compliance management",
-      "Employee onboarding",
-      "Basic reporting",
-      "Standard integrations"
+      "Complete EOR services",
+      "Priority email support",
+      "Automated payroll processing",
+      "Full compliance management",
+      "Streamlined employee onboarding",
+      "Real-time reporting",
+      "API integrations",
+      "No team size restrictions",
+      "Simplified billing"
     ],
     cta: "Start Free Trial",
     ctaLink: "#contact",
@@ -60,7 +62,7 @@ const pricingTiers = [
     employeeRange: "11-50 employees",
     popular: true,
     features: [
-      "Everything in Starter",
+      "Everything in Contractor",
       "Priority support",
       "Advanced compliance",
       "Dedicated account manager",
@@ -123,17 +125,18 @@ const faqs = [
     question: "What happens if I need to cancel?",
     answer: "You can cancel your subscription with 30 days notice. We'll help transition your employees to your new EOR provider or assist with entity setup if you decide to go that route."
   },
-  {
-    question: "Do you offer annual discounts?",
-    answer: "Yes! Annual billing saves you 2 months of fees (equivalent to 16.7% discount). This applies to all plans and is our way of rewarding long-term partnerships."
-  }
+  // Annual discount FAQ commented out
+  // {
+  //   question: "Do you offer annual discounts?",
+  //   answer: "Yes! Annual billing saves you 2 months of fees (equivalent to 16.7% discount). This applies to all plans and is our way of rewarding long-term partnerships."
+  // }
 ];
 
 // ROI Calculator component
 function ROICalculator() {
   const [employees, setEmployees] = useState(10);
   const [avgSalary, setAvgSalary] = useState(80000);
-  const [companyType, setCompanyType] = useState("startup");
+  const [companyType, setCompanyType] = useState("contractor");
 
   const calculateSavings = () => {
     const annualSalary = employees * avgSalary;
@@ -147,8 +150,8 @@ function ROICalculator() {
     const traditionalCosts = entitySetup + legalCompliance + hrManagement + accounting;
     
     // EOR costs
-    const eorBase = companyType === "startup" ? 299 : companyType === "midmarket" ? 499 : 999;
-    const eorPerEmployee = companyType === "startup" ? 89 : companyType === "midmarket" ? 79 : 69;
+    const eorBase = companyType === "contractor" ? 299 : companyType === "midmarket" ? 499 : 999;
+    const eorPerEmployee = companyType === "contractor" ? 89 : companyType === "midmarket" ? 79 : 69;
     const eorAnnual = (eorBase + (employees * eorPerEmployee)) * 12;
     
     const savings = traditionalCosts - eorAnnual;
@@ -214,7 +217,7 @@ function ROICalculator() {
               Company Type
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {["startup", "midmarket", "enterprise"].map((type) => (
+              {["contractor", "midmarket", "enterprise"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setCompanyType(type)}
@@ -256,13 +259,14 @@ function ROICalculator() {
             </div>
           </div>
 
-          <motion.button
-            className="w-full mt-6 bg-cta-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-cta-700 transition-colors"
+          <motion.a
+            href="/contact"
+            className="w-full mt-6 bg-cta-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-cta-700 transition-colors inline-block text-center"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             Get Your Custom Quote
-          </motion.button>
+          </motion.a>
         </div>
       </div>
     </div>
@@ -271,7 +275,7 @@ function ROICalculator() {
 
 // Main PricingClient component
 export default function PricingClient() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly"); // Annual option commented out
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
 
   const { register, handleSubmit, formState, setValue, watch } = useForm<PricingFormData>({
@@ -281,7 +285,16 @@ export default function PricingClient() {
     }
   });
 
+  // Form state debugging (can be removed in production)
+  // console.log('Pricing form state:', {
+  //   isValid: formState.isValid,
+  //   isSubmitting: formState.isSubmitting,
+  //   errors: formState.errors
+  // });
+
   const onSubmit = async (data: PricingFormData) => {
+    console.log('Pricing form submitted with data:', data);
+    console.log('Pricing form validation passed, proceeding with submission...');
     try {
       trackEvent(AnalyticsEvents.FORM_SUBMITTED, {
         form_type: 'pricing_quote',
@@ -289,11 +302,27 @@ export default function PricingClient() {
         employees: data.employees
       });
 
-      // Here you would typically send to your backend
-      console.log('Pricing form submitted:', data);
-      
-      toast.success("Thank you! We'll be in touch within 24 hours.");
+      console.log('Sending pricing form to API...');
+      // Send to backend API
+      const response = await fetch('/api/pricing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log('Pricing API response status:', response.status);
+      const result = await response.json();
+      console.log('Pricing API response:', result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
     } catch (error) {
+      console.error('Pricing form submission error:', error);
       trackEvent(AnalyticsEvents.FORM_ERROR, {
         form_type: 'pricing_quote',
         error: 'submission_failed'
@@ -304,7 +333,7 @@ export default function PricingClient() {
 
   const handleTierSelect = (tierName: string) => {
     setSelectedTier(tierName);
-    setValue("interest", tierName.toLowerCase() as "startup" | "professional" | "enterprise");
+    setValue("interest", tierName.toLowerCase() as "contractor" | "professional" | "enterprise");
   };
 
   return (
@@ -335,6 +364,7 @@ export default function PricingClient() {
             </motion.p>
 
             {/* Billing Toggle */}
+            {/* Annual billing option commented out
             <motion.div 
               className="flex items-center justify-center gap-4 mb-8"
               initial={{ opacity: 0, y: 30 }}
@@ -363,6 +393,7 @@ export default function PricingClient() {
                 </span>
               )}
             </motion.div>
+            */}
           </div>
         </div>
       </section>
@@ -410,7 +441,7 @@ export default function PricingClient() {
                     {typeof tier.price === "number" ? (
                       <div>
                         <span className="text-4xl font-bold text-gray-900">
-                          ${billingCycle === "annual" ? Math.round(tier.price * 10) : tier.price}
+                          ${tier.price}
                         </span>
                         <span className="text-gray-600 ml-2">/month</span>
                       </div>
@@ -530,23 +561,25 @@ export default function PricingClient() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.button
-                className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors"
+              <motion.a
+                href="/contact"
+                className="bg-cta-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-cta-700 transition-colors inline-block text-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'get_started', page: 'pricing' })}
               >
                 Get Started Today
-              </motion.button>
+              </motion.a>
               
-              <motion.button
-                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors"
+              <motion.a
+                href="/contact"
+                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-brand-600 transition-colors inline-block text-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => trackEvent(AnalyticsEvents.CTA_CLICKED, { cta_type: 'book_demo', page: 'pricing' })}
               >
                 Book a Demo
-              </motion.button>
+              </motion.a>
             </div>
 
             <p className="text-sm text-white/70 mt-6">
@@ -634,7 +667,7 @@ export default function PricingClient() {
                   I'm interested in *
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {["starter", "professional", "enterprise", "demo", "quote"].map((option) => (
+                  {["contractor", "professional", "enterprise", "demo", "quote"].map((option) => (
                     <label key={option} className="flex items-center">
                       <input
                         {...register("interest")}

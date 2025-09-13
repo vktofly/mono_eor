@@ -39,65 +39,23 @@ export async function POST(req: Request) {
       );
     }
 
-    const slackMessage: SlackMessage = {
+    const slackMessage = {
       text: `🚨 New Contact Form Submission - ${company || 'Unknown Company'}`,
       blocks: [
-        {
-          type: "header",
-          text: {
-            type: "plain_text",
-            text: "🚨 New Client Registration - Needs Attention!"
-          }
-        },
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `*Company:* ${company || 'Not provided'}\n*Contact Person:* ${name}\n*Email:* ${email}\n*Phone:* ${phone || 'Not provided'}\n*Country:* ${country || 'Not provided'}\n*Company Size:* ${employees || 'Not provided'}\n*Interest:* ${interest || 'General'}\n\n*Message:*\n${message}`
+            text: `*🚨 New Client Registration - Needs Attention!*\n\n*Company:* ${company || 'Not provided'}\n*Contact Person:* ${name}\n*Email:* ${email}\n*Phone:* ${phone || 'Not provided'}\n*Country:* ${country || 'Not provided'}\n*Company Size:* ${employees || 'Not provided'}\n*Interest:* ${interest || 'General'}\n\n*Message:*\n${message}\n\n⏰ Submitted at: ${new Date().toLocaleString('en-US', { 
+              timeZone: 'Asia/Kolkata',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            })} IST`
           }
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "Reply via Email"
-              },
-              url: `mailto:${email}?subject=Re: Your India Expansion Inquiry`,
-              style: "primary"
-            },
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "View in HubSpot"
-              },
-              url: "https://app.hubspot.com/contacts",
-              style: "secondary"
-            }
-          ]
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: {
-                type: "mrkdwn",
-                text: `⏰ Submitted at: ${new Date().toLocaleString('en-US', { 
-                  timeZone: 'Asia/Kolkata',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })} IST`
-              }
-            }
-          ]
         }
       ]
     };

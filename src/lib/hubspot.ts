@@ -88,9 +88,7 @@ class HubSpotService {
             website: contact.website,
             jobtitle: contact.jobtitle,
             industry: contact.industry,
-            lead_status: contact.lead_status || 'new',
-            lead_source: contact.lead_source || 'website',
-            notes: contact.notes,
+            // Custom properties removed - using only standard HubSpot properties
             ...contact.custom_fields,
           },
         }),
